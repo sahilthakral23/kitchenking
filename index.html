@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Pickleball King of the Court Tournament Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #d1fae5;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --accent-light: #fef3c7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-focus: #10b981;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --gold: #f59e0b;
+      --silver: #94a3b8;
+      --bronze: #b45309;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+
+    /* APP CONTAINER */
+    .app-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px 20px;
+      flex: 1;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 14px 20px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.2));
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 9px 15px;
+      min-height: 42px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4);
+      filter: brightness(1.05);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-main);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      background: var(--primary-light);
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      min-height: 32px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-lg {
+      font-size: 1.05rem;
+      padding: 12px 24px;
+      min-height: 48px;
+    }
+
+    /* CARD SYSTEM */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* FORM ALIGNMENT SYSTEM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-height: 32px;
+      display: flex;
+      align-items: flex-end;
+      line-height: 1.2;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      outline: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    select.form-control {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 38px;
+    }
+
+    /* DURATION ROW */
+    .duration-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 18px;
+      align-items: end;
+    }
+
+    /* PLAYER INPUTS GRID */
+    .player-inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+      margin-bottom: 22px;
+    }
+
+    .player-input-card {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px 8px 4px 10px;
+      transition: all 0.2s ease;
+    }
+
+    .player-input-card:focus-within {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+    }
+
+    .player-id-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .player-name-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-main);
+      padding: 6px 0;
+      outline: none;
+      width: 100%;
+    }
+
+    /* TOURNAMENT LIVE BAR */
+    .live-topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .round-meta-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .round-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+    }
+
+    .meta-tag {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* MATCH TIMER BAR */
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+    }
+
+    .timer-display {
+      font-family: 'Outfit', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #34d399;
+      min-width: 68px;
+      text-align: center;
+    }
+
+    .timer-display.running {
+      color: #fbbf24;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .timer-display.ended {
+      color: #f87171;
+      animation: flash 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+
+    @keyframes flash {
+      0% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    .timer-btn {
+      background: #1e293b;
+      color: #ffffff;
+      border: 1px solid #334155;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .timer-btn:hover {
+      background: #334155;
+    }
+
+    /* COURTS CONTAINER */
+    .courts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .court-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .court-card.king-court {
+      border-color: #f59e0b;
+      background: linear-gradient(180deg, #fffdfa 0%, #ffffff 100%);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+    }
+
+    .court-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1.5px dashed var(--border);
+    }
+
+    .court-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .court-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .court-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-king {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-court {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* MATCHUP LAYOUT */
+    .matchup-container {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0;
+    }
+
+    .team-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .team-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-chip {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-chip .p-id {
+      font-size: 0.7rem;
+      font-weight: 800;
+      background: #e2e8f0;
+      color: #475569;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .score-input-wrapper {
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .score-btn {
+      width: 32px;
+      height: 38px;
+      background: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+
+    .score-btn:active {
+      background: #cbd5e1;
+      transform: scale(0.95);
+    }
+
+    .score-input {
+      flex: 1;
+      height: 38px;
+      text-align: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      width: 100%;
+      min-width: 44px;
+    }
+
+    .score-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .score-quick-11 {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 6px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .score-quick-11:hover {
+      background: #a7f3d0;
+    }
+
+    .vs-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .vs-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* BYE BENCH CARD */
+    .bye-card {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .bye-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .bye-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bye-pts-pill {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .bye-players-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .bye-player-chip {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #334155;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* MOVEMENT PREVIEW CARD (AFTER ROUND SUBMIT) */
+    .rotation-card {
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .rotation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .movement-row {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .movement-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .partner-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .swap-btn {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: var(--primary-light);
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius-sm);
+      padding: 3px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .swap-btn:hover {
+      background: #a7f3d0;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-dialog {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--border);
+      background: #f8fafc;
+    }
+
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .modal-close:hover {
+      color: var(--danger);
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1.5px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* LEADERBOARD PODIUM & TABLE */
+    .podium-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: end;
+    }
+
+    .podium-card {
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      text-align: center;
+      border: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .podium-card.first {
+      border-color: #f59e0b;
+      background: linear-gradient(180deg, #fef3c7 0%, #ffffff 100%);
+      padding: 18px 10px;
+    }
+
+    .podium-card.second {
+      border-color: #94a3b8;
+      background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%);
+    }
+
+    .podium-card.third {
+      border-color: #d97706;
+      background: linear-gradient(180deg, #ffedd5 0%, #ffffff 100%);
+    }
+
+    .podium-crown {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .podium-name {
+      font-weight: 800;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .podium-score {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .leaderboard-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 800;
+      color: #475569;
+      border-bottom: 1.5px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    .leaderboard-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .leaderboard-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .leaderboard-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .rank-pill {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .rank-1 { background: #fef3c7; color: #b45309; }
+    .rank-2 { background: #f1f5f9; color: #475569; }
+    .rank-3 { background: #ffedd5; color: #c2410c; }
+
+    /* EDIT ROUNDS ACCORDION */
+    .round-accordion-item {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .round-accordion-header {
+      padding: 12px 16px;
+      background: #f8fafc;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .round-accordion-body {
+      padding: 14px;
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .round-accordion-body.open {
+      display: block;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 16px 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+      background: var(--card-bg);
+    }
+
+    /* NOTIFICATION TOAST */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.3s ease forwards;
+      pointer-events: auto;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* MOBILE ADJUSTMENTS */
+    @media (max-width: 640px) {
+      .app-container {
+        padding: 12px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .brand-group {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .header-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        width: 100%;
+      }
+
+      .header-actions .btn {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .form-label {
+        min-height: auto;
+      }
+
+      .live-topbar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .round-meta-group {
+        justify-content: space-between;
+      }
+
+      .timer-widget {
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .courts-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .matchup-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .vs-divider {
+        flex-direction: row;
+        gap: 8px;
+      }
+
+      .podium-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .podium-card.first {
+        order: -1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- APP HEADER -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon">👑</div>
+        <div>
+          <h1 class="brand-title">King of the Court</h1>
+          <div class="brand-subtitle">Pickleball Tournament Rotation & Score Tracker</div>
+        </div>
+      </div>
+      <div class="header-actions" id="header-actions">
+        <button class="btn btn-accent" id="btn-show-leaderboard" onclick="openLeaderboardModal()">
+          🏆 Leaderboard
+        </button>
+        <button class="btn btn-outline" id="btn-edit-names" onclick="openEditNamesModal()" style="display: none;">
+          ✏️ Edit Names
+        </button>
+        <button class="btn btn-outline" id="btn-past-scores" onclick="openPastScoresModal()" style="display: none;">
+          📋 Past Scores
+        </button>
+        <button class="btn btn-danger btn-sm" id="btn-reset-game" onclick="confirmResetTournament()" style="display: none;">
+          🔄 New Game
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEW 1: TOURNAMENT SETUP -->
+    <main id="setup-view">
+      <div class="card">
+        <h2 class="card-title">⚙️ Tournament Configuration</h2>
+        <p class="card-desc">Configure player count, court availability, round mode, and bye bench points.</p>
+
+        <!-- SETUP FORM CONTROLS WITH FIXED ALIGNMENT -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="player-count">Total Players</label>
+            <select class="form-control" id="player-count" onchange="handlePlayerCountChange()">
+              <option value="8">8 Players (2 Courts)</option>
+              <option value="9">9 Players (2 Courts + 1 Bye)</option>
+              <option value="10">10 Players (2 Courts + 2 Byes)</option>
+              <option value="11">11 Players (2 Courts + 3 Byes)</option>
+              <option value="12">12 Players (3 Courts)</option>
+              <option value="13">13 Players (3 Courts + 1 Bye)</option>
+              <option value="14" selected>14 Players (3 Courts + 2 Byes)</option>
+              <option value="15">15 Players (3 Courts + 3 Byes)</option>
+              <option value="16">16 Players (4 Courts)</option>
+              <option value="17">17 Players (4 Courts + 1 Bye)</option>
+              <option value="18">18 Players (4 Courts + 2 Byes)</option>
+              <option value="19">19 Players (4 Courts + 3 Byes)</option>
+              <option value="20">20 Players (5 Courts)</option>
+              <option value="24">24 Players (6 Courts)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="court-count">Number of Courts</label>
+            <select class="form-control" id="court-count" onchange="handleCourtCountChange()">
+              <option value="2">2 Courts (8 Active Players)</option>
+              <option value="3" selected>3 Courts (12 Active Players)</option>
+              <option value="4">4 Courts (16 Active Players)</option>
+              <option value="5">5 Courts (20 Active Players)</option>
+              <option value="6">6 Courts (24 Active Players)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="bye-scoring-mode">Bye Scoring Mode</label>
+            <select class="form-control" id="bye-scoring-mode" onchange="handleByeScoringModeChange()">
+              <option value="player_avg" selected>Player's Own Avg (PPG)</option>
+              <option value="fixed">Fixed Points</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="fixed-bye-group" style="display: none;">
+            <label class="form-label" for="bye-points">Fixed Bye Points</label>
+            <input type="number" class="form-control" id="bye-points" min="0" max="21" value="7" oninput="handleByePointsChange()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="round-calc-mode">Round Calculation Mode</label>
+            <select class="form-control" id="round-calc-mode" onchange="handleRoundCalcModeChange()">
+              <option value="auto" selected>Auto Balanced (Fair Byes)</option>
+              <option value="duration">Based on Time Duration</option>
+              <option value="custom">Custom Round Count</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="rounds-input-group">
+            <label class="form-label" for="total-rounds">Total Rounds</label>
+            <input type="number" class="form-control" id="total-rounds" min="1" max="30" value="7" readonly>
+          </div>
+        </div>
+
+        <!-- DURATION SETTINGS (SHOWN WHEN MODE = DURATION) -->
+        <div id="duration-settings-card" class="duration-row" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="session-duration">Total Session Duration (Minutes)</label>
+            <input type="number" class="form-control" id="session-duration" min="15" max="480" step="5" value="90" oninput="calculateRoundsFromDuration()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="game-duration">Est. Time per Round (Minutes)</label>
+            <input type="number" class="form-control" id="game-duration" min="5" max="60" step="1" value="13" oninput="calculateRoundsFromDuration()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Calculated Schedule</label>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); padding: 10px 0;">
+              ⏱️ <span id="duration-calc-summary">7 rounds (91 mins total)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLAYER ROSTER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: #334155;">
+            👥 Player Roster
+          </h3>
+          <button class="btn btn-secondary btn-sm" onclick="fillSampleNames()">
+            🎲 Fill Sample Names
+          </button>
+        </div>
+
+        <div class="player-inputs-grid" id="player-inputs-container">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-primary btn-lg" onclick="startTournament()">
+            🚀 Start Tournament
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- VIEW 2: ACTIVE TOURNAMENT SCORING -->
+    <main id="scoring-view" style="display: none;">
+      <!-- TOP STATUS BAR -->
+      <div class="live-topbar">
+        <div class="round-meta-group">
+          <div class="round-badge" id="current-round-badge">
+            Round 1 of 7
+          </div>
+          <div class="meta-tag">
+            🏸 <span id="active-courts-tag">3 Courts</span>
+          </div>
+          <div class="meta-tag">
+            🪑 <span id="active-byes-tag">2 Byes (+7 pts)</span>
+          </div>
+        </div>
+
+        <!-- MATCH TIMER -->
+        <div class="timer-widget">
+          <span style="font-size: 0.82rem; font-weight: 700; color: #94a3b8;">TIMER:</span>
+          <div class="timer-display" id="timer-display">12:00</div>
+          <button class="timer-btn" id="btn-timer-toggle" onclick="toggleTimer()">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer()">↺</button>
+        </div>
+      </div>
+
+      <!-- ACTIVE COURTS GRID -->
+      <div class="courts-grid" id="courts-container">
+        <!-- Dynamically rendered court cards -->
+      </div>
+
+      <!-- BYE BENCH CARD -->
+      <div class="bye-card" id="bye-bench-card">
+        <div class="bye-header">
+          <div class="bye-title">
+            <span>🪑 Bye Bench (Resting Players)</span>
+          </div>
+          <span class="bye-pts-pill" id="bye-pts-label">+7 Pts Awarded Automatically</span>
+        </div>
+        <div class="bye-players-row" id="bye-players-container">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+
+      <!-- SUBMIT ROUND BUTTON -->
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 24px;" id="round-action-container">
+        <button class="btn btn-primary btn-lg" id="btn-submit-round" onclick="submitRoundScores()">
+          ✓ Complete Round & Review Rotations ➔
+        </button>
+      </div>
+
+      <!-- ROTATION & PARTNER ADJUSTMENT CARD (APPEARS AFTER ROUND SUBMIT) -->
+      <div class="rotation-card" id="rotation-preview-card" style="display: none;">
+        <div class="rotation-header">
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--primary-dark);">
+              🔄 King of the Court Rotations for Round <span id="next-round-num">2</span>
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+              Winners moved UP and split. Losers moved DOWN and split. Bench players rotated in.
+            </p>
+          </div>
+          <button class="btn btn-primary" onclick="proceedToNextRound()">
+            Start Round <span id="start-next-round-num">2</span> ➔
+          </button>
+        </div>
+
+        <div id="rotation-list-container">
+          <!-- Dynamically populated with movement rows & swap buttons -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: LEADERBOARD -->
+  <div class="modal-overlay" id="modal-leaderboard">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">🏆 Tournament Standings</h3>
+        <button class="modal-close" onclick="closeLeaderboardModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="podium-grid" id="podium-container">
+          <!-- Top 3 podium items -->
+        </div>
+
+        <div class="table-responsive">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Rank</th>
+                <th>Player</th>
+                <th style="text-align: center;">Games</th>
+                <th style="text-align: center;">Byes</th>
+                <th style="text-align: center;">Avg (PPG)</th>
+                <th style="text-align: right;">Total Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <button class="btn btn-outline btn-sm" onclick="exportTournamentCSV()">
+          📥 Download CSV
+        </button>
+        <button class="btn btn-secondary" onclick="closeLeaderboardModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PLAYER NAMES -->
+  <div class="modal-overlay" id="modal-edit-names">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">✏️ Edit Player Names</h3>
+        <button class="modal-close" onclick="closeEditNamesModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+          Updates player names across the current tournament without affecting existing scores.
+        </p>
+        <div class="player-inputs-grid" id="edit-names-container">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeEditNamesModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditedPlayerNames()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PAST ROUND SCORES -->
+  <div class="modal-overlay" id="modal-past-scores">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 View & Edit Past Round Scores</h3>
+        <button class="modal-close" onclick="closePastScoresModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="past-scores-container">
+        <!-- Dynamically filled with round accordions -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePastScoresModal()">Close</button>
+        <button class="btn btn-primary" onclick="savePastScoresModifications()">Save & Recalculate Standings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- FOOTER -->
+  <footer>
+    Pickleball King of the Court Tournament Tracker &bull; Pure Vanilla HTML/JS Single-File App
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       PICKLEBALL KING OF THE COURT TOURNAMENT ENGINE
+       ========================================================================== */
+
+    // Global State
+    let tournament = {
+      playerCount: 14,
+      courtCount: 3,
+      byeScoringMode: 'player_avg', // 'player_avg' (Option 2: player's own average PPG) or 'fixed'
+      byePoints: 7,                 // Used when byeScoringMode is 'fixed'
+      totalRounds: 7,
+      roundCalcMode: 'auto',
+      currentRound: 1,
+      players: [],                  // [{ id: 1, name: 'Player 1' }, ...]
+      roundsData: [],               // Historic records of all completed rounds
+      currentRoundLayout: null,     // Current court assignments & bye list
+      pendingNextLayout: null,      // Rotated layout prepared for next round
+      timerSeconds: 12 * 60,
+      timerRunning: false,
+      timerInterval: null
+    };
+
+    const SAMPLE_NAMES = [
+      "Ben Johns", "Anna Leigh", "Tyson McGuffin", "Catherine Parenteau",
+      "Riley Newman", "Callie Smith", "JW Johnson", "Lea Jansen",
+      "Zane Navratil", "Lucy Kovalova", "Matt Wright", "Irina Tereschenko",
+      "Dekel Bar", "Andrea Koop", "Jay Devilliers", "Jessie Irvine",
+      "Collin Johns", "Lauren Stratman", "AJ Koller", "Meghan Dizon"
+    ];
+
+    const STORAGE_KEY = 'pickleball_kotc_tournament_data_v1';
+
+    function saveTournamentToStorage() {
+      try {
+        if (!tournament.players || tournament.players.length === 0 || !tournament.currentRoundLayout) return;
+        const payload = {
+          playerCount: tournament.playerCount,
+          courtCount: tournament.courtCount,
+          byeScoringMode: tournament.byeScoringMode,
+          byePoints: tournament.byePoints,
+          totalRounds: tournament.totalRounds,
+          roundCalcMode: tournament.roundCalcMode,
+          currentRound: tournament.currentRound,
+          players: tournament.players,
+          roundsData: tournament.roundsData,
+          currentRoundLayout: tournament.currentRoundLayout,
+          pendingNextLayout: tournament.pendingNextLayout,
+          isCompleted: !!tournament.isCompleted,
+          timerSeconds: tournament.timerSeconds,
+          savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('LocalStorage save failed:', e);
+      }
+    }
+
+    function loadTournamentFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data || !data.players || data.players.length === 0 || !data.currentRoundLayout) return false;
+
+        // Restore state
+        tournament.playerCount = data.playerCount || data.players.length;
+        tournament.courtCount = data.courtCount || 3;
+        tournament.byeScoringMode = data.byeScoringMode || 'player_avg';
+        tournament.byePoints = data.byePoints !== undefined ? data.byePoints : 7;
+        tournament.totalRounds = data.totalRounds || 7;
+        tournament.roundCalcMode = data.roundCalcMode || 'auto';
+        tournament.currentRound = data.currentRound || 1;
+        tournament.players = data.players;
+        tournament.roundsData = data.roundsData || [];
+        tournament.currentRoundLayout = data.currentRoundLayout;
+        tournament.pendingNextLayout = data.pendingNextLayout || null;
+        tournament.isCompleted = !!data.isCompleted;
+        tournament.timerSeconds = data.timerSeconds !== undefined ? data.timerSeconds : 12 * 60;
+
+        // Switch to active scoring view
+        document.getElementById('setup-view').style.display = 'none';
+        document.getElementById('scoring-view').style.display = 'block';
+        document.getElementById('btn-edit-names').style.display = 'inline-flex';
+        document.getElementById('btn-past-scores').style.display = 'inline-flex';
+        document.getElementById('btn-reset-game').style.display = 'inline-flex';
+
+        recalculateAllScores();
+        renderActiveRound();
+
+        if (tournament.isCompleted) {
+          // Lock courtside inputs
+          const courts = tournament.currentRoundLayout.courts;
+          for (let i = 0; i < courts.length; i++) {
+            const inA = document.getElementById(`court-${i}-scoreA`);
+            const inB = document.getElementById(`court-${i}-scoreB`);
+            if (inA) inA.disabled = true;
+            if (inB) inB.disabled = true;
+          }
+
+          const actionContainer = document.getElementById('round-action-container');
+          if (actionContainer) {
+            actionContainer.innerHTML = `
+              <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: var(--radius-md); padding: 16px 20px; width: 100%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-sm);">
+                <div>
+                  <div style="font-family: 'Outfit', sans-serif; font-weight: 800; color: #065f46; font-size: 1.1rem;">
+                    🏆 Tournament Complete!
+                  </div>
+                  <div style="font-size: 0.85rem; color: #047857; margin-top: 2px;">
+                    All ${tournament.totalRounds} rounds finished. You can view standings or edit any past round scores.
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="btn btn-outline" onclick="exportTournamentCSV()">📥 Download CSV</button>
+                  <button class="btn btn-outline" onclick="openPastScoresModal()">📋 Edit Past Scores</button>
+                  <button class="btn btn-primary" onclick="openLeaderboardModal()">🏆 View Final Standings</button>
+                </div>
+              </div>
+            `;
+            actionContainer.style.display = 'flex';
+          }
+        } else if (tournament.pendingNextLayout) {
+          renderRotationPreview(tournament.pendingNextLayout);
+        }
+
+        updateTimerDisplay();
+        showToast(`📂 Resumed tournament (Round ${tournament.currentRound} of ${tournament.totalRounds})`);
+        return true;
+      } catch (e) {
+        console.error('Failed to load tournament from LocalStorage:', e);
+        return false;
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const restored = loadTournamentFromStorage();
+      if (!restored) {
+        renderSetupPlayerInputs(14);
+        updateSetupRoundCalculation();
+      }
+    });
+
+    /* ==========================================================================
+       SETUP CONFIGURATION HANDLERS
+       ========================================================================== */
+
+    function handlePlayerCountChange() {
+      const pCount = parseInt(document.getElementById('player-count').value, 10);
+      tournament.playerCount = pCount;
+
+      // Auto adjust max courts based on player count
+      const courtSelect = document.getElementById('court-count');
+      const maxCourtsPossible = Math.floor(pCount / 4);
+      
+      let html = '';
+      for (let c = 2; c <= Math.min(6, Math.max(2, maxCourtsPossible)); c++) {
+        const active = c * 4;
+        const byes = pCount - active;
+        const byeText = byes > 0 ? ` + ${byes} Bye${byes > 1 ? 's' : ''}` : ' (No Byes)';
+        html += `<option value="${c}">${c} Courts (${active} Active${byeText})</option>`;
+      }
+      courtSelect.innerHTML = html;
+
+      // Select highest practical court count
+      const defaultCourt = Math.max(2, Math.min(maxCourtsPossible, 3));
+      courtSelect.value = String(defaultCourt);
+      tournament.courtCount = defaultCourt;
+
+      renderSetupPlayerInputs(pCount);
+      updateSetupRoundCalculation();
+    }
+
+    function handleCourtCountChange() {
+      tournament.courtCount = parseInt(document.getElementById('court-count').value, 10);
+      updateSetupRoundCalculation();
+    }
+
+    function handleByeScoringModeChange() {
+      const mode = document.getElementById('bye-scoring-mode').value;
+      tournament.byeScoringMode = mode;
+      const fixedGroup = document.getElementById('fixed-bye-group');
+      if (fixedGroup) {
+        fixedGroup.style.display = mode === 'fixed' ? 'flex' : 'none';
+      }
+    }
+
+    function handleByePointsChange() {
+      const val = document.getElementById('bye-points').value;
+      tournament.byePoints = val === '' ? 0 : Math.max(0, parseInt(val, 10));
+    }
+
+    function handleRoundCalcModeChange() {
+      const mode = document.getElementById('round-calc-mode').value;
+      tournament.roundCalcMode = mode;
+
+      const durationCard = document.getElementById('duration-settings-card');
+      const roundsInput = document.getElementById('total-rounds');
+
+      if (mode === 'duration') {
+        durationCard.style.display = 'grid';
+        roundsInput.readOnly = true;
+        calculateRoundsFromDuration();
+      } else if (mode === 'custom') {
+        durationCard.style.display = 'none';
+        roundsInput.readOnly = false;
+      } else { // auto
+        durationCard.style.display = 'none';
+        roundsInput.readOnly = true;
+        updateSetupRoundCalculation();
+      }
+    }
+
+    function calculateRoundsFromDuration() {
+      const totalMins = parseInt(document.getElementById('session-duration').value, 10) || 90;
+      const gameMins = parseInt(document.getElementById('game-duration').value, 10) || 13;
+      const rounds = Math.max(1, Math.floor(totalMins / gameMins));
+
+      document.getElementById('total-rounds').value = rounds;
+      tournament.totalRounds = rounds;
+      document.getElementById('duration-calc-summary').innerText = `${rounds} rounds (~${rounds * gameMins} mins total)`;
+    }
+
+    function updateSetupRoundCalculation() {
+      if (tournament.roundCalcMode === 'duration') {
+        calculateRoundsFromDuration();
+        return;
+      }
+      if (tournament.roundCalcMode === 'custom') {
+        return;
+      }
+
+      // Auto Balanced Fair Byes:
+      // When 14 players & 3 courts (12 active, 2 byes), fair rotation cycle is 14 / gcd(14, 2) = 7 rounds.
+      const pCount = parseInt(document.getElementById('player-count').value, 10);
+      const cCount = parseInt(document.getElementById('court-count').value, 10);
+      const byeCount = pCount - (cCount * 4);
+
+      let calculatedRounds = 7;
+      if (byeCount === 0) {
+        calculatedRounds = Math.max(5, pCount - 1);
+      } else {
+        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        const cycle = pCount / gcd(pCount, byeCount);
+        calculatedRounds = cycle < 5 ? cycle * 2 : cycle;
+      }
+
+      document.getElementById('total-rounds').value = calculatedRounds;
+      tournament.totalRounds = calculatedRounds;
+    }
+
+    function renderSetupPlayerInputs(count) {
+      const container = document.getElementById('player-inputs-container');
+      let html = '';
+      for (let i = 1; i <= count; i++) {
+        const defaultName = `Player ${i}`;
+        html += `
+          <div class="player-input-card">
+            <span class="player-id-badge">#${i}</span>
+            <input type="text" class="player-name-input" id="setup-player-${i}" value="${defaultName}" placeholder="Enter name">
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function fillSampleNames() {
+      const count = parseInt(document.getElementById('player-count').value, 10);
+      for (let i = 1; i <= count; i++) {
+        const input = document.getElementById(`setup-player-${i}`);
+        if (input) {
+          input.value = SAMPLE_NAMES[(i - 1) % SAMPLE_NAMES.length];
+        }
+      }
+      showToast("Sample player names loaded!");
+    }
+
+    /* ==========================================================================
+       TOURNAMENT START & INITIAL ROTATION
+       ========================================================================== */
+
+    function startTournament() {
+      const pCount = parseInt(document.getElementById('player-count').value, 10);
+      const cCount = parseInt(document.getElementById('court-count').value, 10);
+      const rounds = parseInt(document.getElementById('total-rounds').value, 10) || 7;
+      const byeMode = document.getElementById('bye-scoring-mode')?.value || 'player_avg';
+      const byePtsInput = document.getElementById('bye-points')?.value;
+      const byePts = byePtsInput === '' ? 7 : Math.max(0, parseInt(byePtsInput, 10));
+
+      if (cCount * 4 > pCount) {
+        alert("Number of courts exceeds player capacity. Please reduce courts or add players.");
+        return;
+      }
+
+      // Collect players
+      tournament.players = [];
+      for (let i = 1; i <= pCount; i++) {
+        const input = document.getElementById(`setup-player-${i}`);
+        const name = (input && input.value.trim()) ? input.value.trim() : `Player ${i}`;
+        tournament.players.push({
+          id: i,
+          name: name,
+          activeScore: 0,
+          totalScore: 0,
+          roundsPlayed: 0,
+          byesReceived: 0,
+          avgScore: 0
+        });
+      }
+
+      tournament.playerCount = pCount;
+      tournament.courtCount = cCount;
+      tournament.byeScoringMode = byeMode;
+      tournament.byePoints = byePts;
+      tournament.totalRounds = rounds;
+      tournament.currentRound = 1;
+      tournament.roundsData = [];
+      tournament.isCompleted = false;
+
+      // Generate initial Round 1 layout
+      tournament.currentRoundLayout = generateInitialRoundLayout(tournament.players, cCount);
+
+      // Switch views
+      document.getElementById('setup-view').style.display = 'none';
+      document.getElementById('scoring-view').style.display = 'block';
+      document.getElementById('btn-edit-names').style.display = 'inline-flex';
+      document.getElementById('btn-past-scores').style.display = 'inline-flex';
+      document.getElementById('btn-reset-game').style.display = 'inline-flex';
+
+      renderActiveRound();
+      saveTournamentToStorage();
+      showToast("Tournament started! Good luck players 🏓");
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function generateInitialRoundLayout(players, courtCount) {
+      // Randomly shuffle all players into courts and bye bench
+      const shuffledPlayers = shuffleArray(players);
+      const courts = [];
+      let playerIdx = 0;
+
+      for (let c = 1; c <= courtCount; c++) {
+        courts.push({
+          courtNum: c,
+          courtName: c === 1 ? "Court 1 (King)" : `Court ${c}`,
+          isKingCourt: c === 1,
+          teamA: [shuffledPlayers[playerIdx].id, shuffledPlayers[playerIdx + 1].id],
+          teamB: [shuffledPlayers[playerIdx + 2].id, shuffledPlayers[playerIdx + 3].id],
+          scoreA: "",
+          scoreB: ""
+        });
+        playerIdx += 4;
+      }
+
+      // Remaining players sit on bye bench for Round 1
+      const byes = [];
+      for (let b = playerIdx; b < shuffledPlayers.length; b++) {
+        byes.push(shuffledPlayers[b].id);
+      }
+
+      return {
+        roundNumber: 1,
+        courts: courts,
+        byes: byes
+      };
+    }
+
+    function reshuffleRound1() {
+      if (tournament.currentRound !== 1 || tournament.roundsData.length > 0) return;
+      tournament.currentRoundLayout = generateInitialRoundLayout(tournament.players, tournament.courtCount);
+      renderActiveRound();
+      saveTournamentToStorage();
+      showToast("🎲 Starting matchups randomly shuffled!");
+    }
+
+    /* ==========================================================================
+       ACTIVE ROUND SCORING UI
+       ========================================================================== */
+
+    function renderActiveRound() {
+      const layout = tournament.currentRoundLayout;
+      const rNum = tournament.currentRound;
+      const ptsLabel = tournament.byeScoringMode === 'player_avg' ? "Player's Avg PPG" : `+${tournament.byePoints} pts`;
+
+      // Badges
+      document.getElementById('current-round-badge').innerText = `Round ${rNum} of ${tournament.totalRounds}`;
+      document.getElementById('active-courts-tag').innerText = `${tournament.courtCount} Courts`;
+      document.getElementById('active-byes-tag').innerText = `${layout.byes.length} Bye${layout.byes.length !== 1 ? 's' : ''} (${ptsLabel})`;
+
+      // Render Courts
+      const container = document.getElementById('courts-container');
+      let html = '';
+
+      layout.courts.forEach((c, idx) => {
+        const pA1 = getPlayer(c.teamA[0]);
+        const pA2 = getPlayer(c.teamA[1]);
+        const pB1 = getPlayer(c.teamB[0]);
+        const pB2 = getPlayer(c.teamB[1]);
+
+        html += `
+          <div class="court-card ${c.isKingCourt ? 'king-court' : ''}">
+            <div class="court-header">
+              <div class="court-title-group">
+                <span class="court-title">${c.isKingCourt ? '👑 ' : '🏸 '}${c.courtName}</span>
+              </div>
+              <span class="court-badge ${c.isKingCourt ? 'badge-king' : 'badge-court'}">
+                ${c.isKingCourt ? 'King of Court' : `Court ${c.courtNum}`}
+              </span>
+            </div>
+
+            <div class="matchup-container">
+              <!-- TEAM A -->
+              <div class="team-box">
+                <div class="team-label">
+                  <span>Team A</span>
+                  <button type="button" class="score-quick-11" onclick="quickSetScore(${idx}, 'A', 11)">Set 11</button>
+                </div>
+                <div class="player-chip">
+                  <span class="p-id">#${pA1.id}</span>
+                  <span>${pA1.name}</span>
+                </div>
+                <div class="player-chip">
+                  <span class="p-id">#${pA2.id}</span>
+                  <span>${pA2.name}</span>
+                </div>
+                <div class="score-input-wrapper">
+                  <button type="button" class="score-btn" onclick="stepScore(${idx}, 'A', -1)">−</button>
+                  <input type="number" min="0" max="99" class="score-input" id="court-${idx}-scoreA" 
+                         value="${c.scoreA !== undefined ? c.scoreA : ''}" placeholder="0" 
+                         onchange="updateScoreState(${idx}, 'A', this.value)">
+                  <button type="button" class="score-btn" onclick="stepScore(${idx}, 'A', 1)">+</button>
+                </div>
+              </div>
+
+              <!-- VS BADGE -->
+              <div class="vs-divider">
+                <div class="vs-badge">VS</div>
+              </div>
+
+              <!-- TEAM B -->
+              <div class="team-box">
+                <div class="team-label">
+                  <span>Team B</span>
+                  <button type="button" class="score-quick-11" onclick="quickSetScore(${idx}, 'B', 11)">Set 11</button>
+                </div>
+                <div class="player-chip">
+                  <span class="p-id">#${pB1.id}</span>
+                  <span>${pB1.name}</span>
+                </div>
+                <div class="player-chip">
+                  <span class="p-id">#${pB2.id}</span>
+                  <span>${pB2.name}</span>
+                </div>
+                <div class="score-input-wrapper">
+                  <button type="button" class="score-btn" onclick="stepScore(${idx}, 'B', -1)">−</button>
+                  <input type="number" min="0" max="99" class="score-input" id="court-${idx}-scoreB" 
+                         value="${c.scoreB !== undefined ? c.scoreB : ''}" placeholder="0" 
+                         onchange="updateScoreState(${idx}, 'B', this.value)">
+                  <button type="button" class="score-btn" onclick="stepScore(${idx}, 'B', 1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      // Render Byes
+      const byeContainer = document.getElementById('bye-players-container');
+      const byeLabel = document.getElementById('bye-pts-label');
+      if (byeLabel) {
+        byeLabel.innerText = tournament.byeScoringMode === 'player_avg'
+          ? "✨ Awarded: Player's Own Scoring Avg (PPG)"
+          : (tournament.byePoints > 0 ? `+${tournament.byePoints} Pts Awarded Automatically` : `0 Pts (Resting Round)`);
+      }
+
+      if (layout.byes.length === 0) {
+        document.getElementById('bye-bench-card').style.display = 'none';
+      } else {
+        document.getElementById('bye-bench-card').style.display = 'block';
+        let byeHtml = '';
+        layout.byes.forEach(pid => {
+          const p = getPlayer(pid);
+          byeHtml += `
+            <div class="bye-player-chip">
+              <span class="player-id-badge">#${p.id}</span>
+              <span>${p.name}</span>
+            </div>
+          `;
+        });
+        byeContainer.innerHTML = byeHtml;
+      }
+
+      // Hide rotation preview when rendering fresh round
+      document.getElementById('rotation-preview-card').style.display = 'none';
+      if (!tournament.isCompleted) {
+        const actionBtnText = rNum === tournament.totalRounds 
+          ? '✓ Complete Final Round & View Results ➔' 
+          : '✓ Complete Round & Review Rotations ➔';
+
+        let reshuffleBtn = '';
+        if (rNum === 1 && tournament.roundsData.length === 0) {
+          reshuffleBtn = `
+            <button class="btn btn-secondary btn-lg" onclick="reshuffleRound1()" title="Randomly re-roll starting matchups and bye bench">
+              🔀 Reshuffle Matchups
+            </button>
+          `;
+        }
+
+        document.getElementById('round-action-container').innerHTML = `
+          ${reshuffleBtn}
+          <button class="btn btn-primary btn-lg" id="btn-submit-round" onclick="submitRoundScores()">
+            ${actionBtnText}
+          </button>
+        `;
+        document.getElementById('round-action-container').style.display = 'flex';
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function stepScore(courtIdx, team, delta) {
+      if (tournament.isCompleted) return;
+      const input = document.getElementById(`court-${courtIdx}-score${team}`);
+      let val = parseInt(input.value, 10) || 0;
+      val = Math.max(0, val + delta);
+      input.value = val;
+      updateScoreState(courtIdx, team, val);
+    }
+
+    function quickSetScore(courtIdx, team, score) {
+      if (tournament.isCompleted) return;
+      const input = document.getElementById(`court-${courtIdx}-score${team}`);
+      input.value = score;
+      updateScoreState(courtIdx, team, score);
+    }
+
+    function updateScoreState(courtIdx, team, val) {
+      if (tournament.isCompleted) return;
+      const layout = tournament.currentRoundLayout;
+      if (team === 'A') layout.courts[courtIdx].scoreA = val === '' ? '' : parseInt(val, 10);
+      if (team === 'B') layout.courts[courtIdx].scoreB = val === '' ? '' : parseInt(val, 10);
+      saveTournamentToStorage();
+    }
+
+    /* ==========================================================================
+       ROUND SUBMISSION & KING OF COURT ROTATION ALGORITHM
+       ========================================================================== */
+
+    function submitRoundScores() {
+      if (tournament.isCompleted) {
+        openLeaderboardModal();
+        return;
+      }
+
+      const layout = tournament.currentRoundLayout;
+      const courts = layout.courts;
+
+      // Validate all scores are entered and not tied
+      for (let i = 0; i < courts.length; i++) {
+        const inputA = document.getElementById(`court-${i}-scoreA`);
+        const inputB = document.getElementById(`court-${i}-scoreB`);
+        const scoreA = parseInt(inputA.value, 10);
+        const scoreB = parseInt(inputB.value, 10);
+
+        if (isNaN(scoreA) || isNaN(scoreB)) {
+          alert(`Please enter valid scores for all matches on ${courts[i].courtName}.`);
+          return;
+        }
+        if (scoreA === scoreB) {
+          alert(`Tie score (${scoreA}-${scoreB}) on ${courts[i].courtName}. Pickleball games must have a winner. Please break the tie.`);
+          return;
+        }
+
+        courts[i].scoreA = scoreA;
+        courts[i].scoreB = scoreB;
+      }
+
+      // Record this round in history
+      const savedRound = JSON.parse(JSON.stringify(layout));
+      tournament.roundsData.push(savedRound);
+
+      // Recalculate standings
+      recalculateAllScores();
+
+      // Check if tournament is finished
+      if (tournament.currentRound >= tournament.totalRounds) {
+        tournament.isCompleted = true;
+        saveTournamentToStorage();
+        showToast("🎉 Tournament Complete! Final standings ready.");
+
+        // Lock courtside inputs
+        for (let i = 0; i < courts.length; i++) {
+          const inA = document.getElementById(`court-${i}-scoreA`);
+          const inB = document.getElementById(`court-${i}-scoreB`);
+          if (inA) inA.disabled = true;
+          if (inB) inB.disabled = true;
+        }
+
+        // Replace complete button with tournament completion banner
+        const actionContainer = document.getElementById('round-action-container');
+        if (actionContainer) {
+          actionContainer.innerHTML = `
+            <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: var(--radius-md); padding: 16px 20px; width: 100%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-sm);">
+              <div>
+                <div style="font-family: 'Outfit', sans-serif; font-weight: 800; color: #065f46; font-size: 1.1rem;">
+                  🏆 Tournament Complete!
+                </div>
+                <div style="font-size: 0.85rem; color: #047857; margin-top: 2px;">
+                  All ${tournament.totalRounds} rounds finished. You can view standings or edit any past round scores.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-outline" onclick="exportTournamentCSV()">📥 Download CSV</button>
+                <button class="btn btn-outline" onclick="openPastScoresModal()">📋 Edit Past Scores</button>
+                <button class="btn btn-primary" onclick="openLeaderboardModal()">🏆 View Final Standings</button>
+              </div>
+            </div>
+          `;
+          actionContainer.style.display = 'flex';
+        }
+
+        openLeaderboardModal();
+        return;
+      }
+
+      // Compute Next Round Rotations
+      tournament.pendingNextLayout = computeNextRoundRotations(layout);
+      saveTournamentToStorage();
+
+      // Render Rotation Review Card
+      renderRotationPreview(tournament.pendingNextLayout);
+    }
+
+    function computeNextRoundRotations(currentLayout) {
+      const courts = currentLayout.courts;
+      const numCourts = courts.length;
+      const byeCountNeeded = tournament.players.length - (numCourts * 4);
+
+      // Extract winners & losers for each court
+      const courtWinners = [];
+      const courtLosers = [];
+
+      courts.forEach(c => {
+        if (c.scoreA > c.scoreB) {
+          courtWinners.push([...c.teamA]);
+          courtLosers.push([...c.teamB]);
+        } else {
+          courtWinners.push([...c.teamB]);
+          courtLosers.push([...c.teamA]);
+        }
+      });
+
+      // Recalculate historical byes received for all players up to current round
+      const playerByeCounts = {};
+      tournament.players.forEach(p => { playerByeCounts[p.id] = 0; });
+      tournament.roundsData.forEach(r => {
+        (r.byes || []).forEach(pid => {
+          playerByeCounts[pid] = (playerByeCounts[pid] || 0) + 1;
+        });
+      });
+
+      const nextCourts = [];
+      let nextByes = [];
+
+      if (byeCountNeeded === 0) {
+        // No byes: standard King of the Court rotation
+        const c1Winners = courtWinners[0];
+        const c2Winners = courtWinners[1];
+
+        nextCourts.push({
+          courtNum: 1,
+          courtName: "Court 1 (King)",
+          isKingCourt: true,
+          teamA: [c1Winners[0], c2Winners[0]],
+          teamB: [c1Winners[1], c2Winners[1]],
+          scoreA: "",
+          scoreB: ""
+        });
+
+        for (let c = 2; c < numCourts; c++) {
+          const cIdx = c - 1;
+          const movingUpWinners = courtWinners[cIdx + 1];
+          const movingDownLosers = courtLosers[cIdx - 1];
+
+          nextCourts.push({
+            courtNum: c,
+            courtName: `Court ${c}`,
+            isKingCourt: false,
+            teamA: [movingDownLosers[0], movingUpWinners[0]],
+            teamB: [movingDownLosers[1], movingUpWinners[1]],
+            scoreA: "",
+            scoreB: ""
+          });
+        }
+
+        const bottomIdx = numCourts - 1;
+        const movingDownLosersToBottom = courtLosers[bottomIdx - 1];
+        const bottomCourtLosers = courtLosers[bottomIdx];
+
+        nextCourts.push({
+          courtNum: numCourts,
+          courtName: `Court ${numCourts}`,
+          isKingCourt: false,
+          teamA: [movingDownLosersToBottom[0], bottomCourtLosers[0]],
+          teamB: [movingDownLosersToBottom[1], bottomCourtLosers[1]],
+          scoreA: "",
+          scoreB: ""
+        });
+
+        return {
+          roundNumber: tournament.currentRound + 1,
+          courts: nextCourts,
+          byes: []
+        };
+      }
+
+      // BYES PRESENT:
+      // STRICT FAIRNESS CONSTRAINT: No player gets a 2nd bye until ALL players receive 1 bye
+      // (and in general, no player gets k+1 byes until all players receive k byes).
+      const currentMinByes = Math.min(...tournament.players.map(p => playerByeCounts[p.id]));
+
+      // Active player candidate ranking for the bench (lowest performance in this round first):
+      // Court N losers -> Court N-1 losers -> ... -> Court 1 losers -> Court N winners -> ... -> Court 1 winners
+      const candidateHierarchy = [];
+      for (let c = numCourts - 1; c >= 0; c--) {
+        candidateHierarchy.push(courtLosers[c][1]);
+        candidateHierarchy.push(courtLosers[c][0]);
+      }
+      for (let c = numCourts - 1; c >= 0; c--) {
+        candidateHierarchy.push(courtWinners[c][1]);
+        candidateHierarchy.push(courtWinners[c][0]);
+      }
+
+      // 1. Pick players who have currentMinByes
+      for (const pid of candidateHierarchy) {
+        if (nextByes.length >= byeCountNeeded) break;
+        if (playerByeCounts[pid] === currentMinByes && !nextByes.includes(pid)) {
+          nextByes.push(pid);
+        }
+      }
+
+      // 2. If more byes are needed, pick from candidates with next minimum byes
+      if (nextByes.length < byeCountNeeded) {
+        for (const pid of candidateHierarchy) {
+          if (nextByes.length >= byeCountNeeded) break;
+          if (!nextByes.includes(pid)) {
+            nextByes.push(pid);
+          }
+        }
+      }
+
+      // 3. Assemble active players for the 4N court slots
+      const assigned = new Set(nextByes);
+      const activePool = tournament.players.map(p => p.id).filter(id => !assigned.has(id));
+
+      const getAvailable = (list) => (list || []).filter(pid => !assigned.has(pid));
+
+      // Court 1 (King): top available winners
+      const c1WinnersAvail = getAvailable(courtWinners[0]);
+      const c2WinnersAvail = getAvailable(courtWinners[1] || []);
+      const court1Players = [];
+      [...c1WinnersAvail, ...c2WinnersAvail, ...activePool].forEach(pid => {
+        if (court1Players.length < 4 && !court1Players.includes(pid) && !assigned.has(pid)) {
+          court1Players.push(pid);
+        }
+      });
+      court1Players.forEach(pid => assigned.add(pid));
+
+      nextCourts.push({
+        courtNum: 1,
+        courtName: "Court 1 (King)",
+        isKingCourt: true,
+        teamA: [court1Players[0], court1Players[2]],
+        teamB: [court1Players[1], court1Players[3]],
+        scoreA: "",
+        scoreB: ""
+      });
+
+      // Middle Courts 2 to N-1
+      for (let c = 2; c < numCourts; c++) {
+        const cIdx = c - 1;
+        const downLAvail = getAvailable(courtLosers[cIdx - 1]);
+        const upWAvail = getAvailable(courtWinners[cIdx + 1] || []);
+        const courtCPlayers = [];
+        [...downLAvail, ...upWAvail, ...activePool].forEach(pid => {
+          if (courtCPlayers.length < 4 && !courtCPlayers.includes(pid) && !assigned.has(pid)) {
+            courtCPlayers.push(pid);
+          }
+        });
+        courtCPlayers.forEach(pid => assigned.add(pid));
+
+        nextCourts.push({
+          courtNum: c,
+          courtName: `Court ${c}`,
+          isKingCourt: false,
+          teamA: [courtCPlayers[0], courtCPlayers[2]],
+          teamB: [courtCPlayers[1], courtCPlayers[3]],
+          scoreA: "",
+          scoreB: ""
+        });
+      }
+
+      // Bottom Court N: incoming byes & remaining active players
+      const remainingForBottom = activePool.filter(pid => !assigned.has(pid));
+      nextCourts.push({
+        courtNum: numCourts,
+        courtName: `Court ${numCourts}`,
+        isKingCourt: false,
+        teamA: [remainingForBottom[0], remainingForBottom[1]],
+        teamB: [remainingForBottom[2], remainingForBottom[3]],
+        scoreA: "",
+        scoreB: ""
+      });
+
+      return {
+        roundNumber: tournament.currentRound + 1,
+        courts: nextCourts,
+        byes: nextByes
+      };
+    }
+
+    function renderRotationPreview(nextLayout) {
+      const nextRound = tournament.currentRound + 1;
+      const ptsText = tournament.byeScoringMode === 'player_avg' ? "Player's Avg PPG" : (tournament.byePoints > 0 ? `+${tournament.byePoints} pts` : `0 pts`);
+      document.getElementById('next-round-num').innerText = nextRound;
+      document.getElementById('start-next-round-num').innerText = nextRound;
+
+      const container = document.getElementById('rotation-list-container');
+      let html = '';
+
+      nextLayout.courts.forEach((c, idx) => {
+        const pA1 = getPlayer(c.teamA[0]);
+        const pA2 = getPlayer(c.teamA[1]);
+        const pB1 = getPlayer(c.teamB[0]);
+        const pB2 = getPlayer(c.teamB[1]);
+
+        html += `
+          <div class="movement-row">
+            <div class="movement-row-header">
+              <span style="color: ${c.isKingCourt ? '#d97706' : '#334155'}; font-weight: 800;">
+                ${c.isKingCourt ? '👑 ' : '🏸 '}${c.courtName}
+              </span>
+              <button type="button" class="swap-btn" onclick="swapNextRoundPartners(${idx})">
+                ⇄ Swap Partners
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <div class="partner-pair">
+                <span>Team A:</span>
+                <span style="color: var(--primary-dark);">#${pA1.id} ${pA1.name}</span> + 
+                <span style="color: var(--primary-dark);">#${pA2.id} ${pA2.name}</span>
+              </div>
+              <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8;">VS</span>
+              <div class="partner-pair">
+                <span>Team B:</span>
+                <span style="color: var(--primary-dark);">#${pB1.id} ${pB1.name}</span> + 
+                <span style="color: var(--primary-dark);">#${pB2.id} ${pB2.name}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      if (nextLayout.byes.length > 0) {
+        let byeNames = nextLayout.byes.map(pid => {
+          const p = getPlayer(pid);
+          return `#${p.id} ${p.name}`;
+        }).join(', ');
+
+        html += `
+          <div class="movement-row" style="background: #fefce8; border-color: #fde047;">
+            <div class="movement-row-header">
+              <span style="color: #a16207;">🪑 Next Bye Bench (${ptsText})</span>
+            </div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: #713f12;">
+              ${byeNames}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+      document.getElementById('rotation-preview-card').style.display = 'block';
+      document.getElementById('round-action-container').style.display = 'none';
+
+      // Scroll smoothly down to rotation card
+      document.getElementById('rotation-preview-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function swapNextRoundPartners(courtIdx) {
+      const court = tournament.pendingNextLayout.courts[courtIdx];
+      // Swap Team A second player with Team B second player
+      const temp = court.teamA[1];
+      court.teamA[1] = court.teamB[1];
+      court.teamB[1] = temp;
+
+      saveTournamentToStorage();
+      renderRotationPreview(tournament.pendingNextLayout);
+      showToast(`Partners swapped on ${court.courtName}`);
+    }
+
+    function proceedToNextRound() {
+      tournament.currentRound += 1;
+      tournament.currentRoundLayout = JSON.parse(JSON.stringify(tournament.pendingNextLayout));
+      tournament.pendingNextLayout = null;
+
+      saveTournamentToStorage();
+      renderActiveRound();
+      resetTimer();
+      showToast(`Started Round ${tournament.currentRound}!`);
+    }
+
+    /* ==========================================================================
+       SCORE RECALCULATION ENGINE & STANDINGS
+       ========================================================================== */
+
+    function recalculateAllScores() {
+      // 1. Reset all player statistics
+      tournament.players.forEach(p => {
+        p.activeScore = 0;
+        p.totalScore = 0;
+        p.roundsPlayed = 0;
+        p.byesReceived = 0;
+        p.avgScore = 0;
+      });
+
+      // 2. Tally active playing scores and bye occurrences
+      tournament.roundsData.forEach(r => {
+        r.courts.forEach(c => {
+          const scoreA = parseInt(c.scoreA, 10) || 0;
+          const scoreB = parseInt(c.scoreB, 10) || 0;
+
+          c.teamA.forEach(pid => {
+            const p = getPlayer(pid);
+            if (p) {
+              p.activeScore += scoreA;
+              p.roundsPlayed += 1;
+            }
+          });
+
+          c.teamB.forEach(pid => {
+            const p = getPlayer(pid);
+            if (p) {
+              p.activeScore += scoreB;
+              p.roundsPlayed += 1;
+            }
+          });
+        });
+
+        (r.byes || []).forEach(pid => {
+          const p = getPlayer(pid);
+          if (p) {
+            p.byesReceived += 1;
+          }
+        });
+      });
+
+      // 3. Calculate each player's average points per game (PPG)
+      tournament.players.forEach(p => {
+        p.avgScore = p.roundsPlayed > 0 ? parseFloat((p.activeScore / p.roundsPlayed).toFixed(2)) : 7.0;
+      });
+
+      // 4. Calculate total score including fair bye points
+      tournament.players.forEach(p => {
+        if (p.byesReceived === 0) {
+          p.totalScore = p.activeScore;
+        } else {
+          if (tournament.byeScoringMode === 'fixed') {
+            const fixedPts = tournament.byePoints !== undefined ? tournament.byePoints : 7;
+            p.totalScore = p.activeScore + (p.byesReceived * fixedPts);
+          } else {
+            // Player's Own Rolling Average (PPG)
+            const byePts = p.byesReceived * p.avgScore;
+            p.totalScore = parseFloat((p.activeScore + byePts).toFixed(1));
+          }
+        }
+      });
+    }
+
+    function getPlayer(id) {
+      return tournament.players.find(p => p.id === id) || { id: id, name: `Player ${id}`, totalScore: 0, activeScore: 0, avgScore: 0, roundsPlayed: 0, byesReceived: 0 };
+    }
+
+    /* ==========================================================================
+       MODALS: LEADERBOARD, EDIT NAMES, PAST SCORES
+       ========================================================================== */
+
+    function openLeaderboardModal() {
+      recalculateAllScores();
+
+      // Sort players by total score descending (tie-breaker by avgScore)
+      const sorted = [...tournament.players].sort((a, b) => {
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        return a.id - b.id;
+      });
+
+      // Podium Top 3
+      const podium = document.getElementById('podium-container');
+      if (sorted.length >= 3) {
+        podium.innerHTML = `
+          <div class="podium-card second">
+            <div class="podium-crown">🥈</div>
+            <div class="podium-name">#${sorted[1].id} ${sorted[1].name}</div>
+            <div class="podium-score">${sorted[1].totalScore} pts</div>
+          </div>
+          <div class="podium-card first">
+            <div class="podium-crown">👑</div>
+            <div class="podium-name">#${sorted[0].id} ${sorted[0].name}</div>
+            <div class="podium-score">${sorted[0].totalScore} pts</div>
+          </div>
+          <div class="podium-card third">
+            <div class="podium-crown">🥉</div>
+            <div class="podium-name">#${sorted[2].id} ${sorted[2].name}</div>
+            <div class="podium-score">${sorted[2].totalScore} pts</div>
+          </div>
+        `;
+        podium.style.display = 'grid';
+      } else {
+        podium.style.display = 'none';
+      }
+
+      // Full Table
+      const tbody = document.getElementById('leaderboard-table-body');
+      let html = '';
+      sorted.forEach((p, idx) => {
+        const rank = idx + 1;
+        const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+        html += `
+          <tr>
+            <td><span class="rank-pill ${rankClass}">${rank}</span></td>
+            <td><strong>#${p.id} ${p.name}</strong></td>
+            <td style="text-align: center;">${p.roundsPlayed}</td>
+            <td style="text-align: center;">${p.byesReceived}</td>
+            <td style="text-align: center; font-weight: 700; color: #047857;">${p.avgScore.toFixed(1)}</td>
+            <td style="text-align: right; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--primary-dark);">
+              ${p.totalScore}
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+
+      document.getElementById('modal-leaderboard').classList.add('active');
+    }
+
+    function closeLeaderboardModal() {
+      document.getElementById('modal-leaderboard').classList.remove('active');
+    }
+
+    function openEditNamesModal() {
+      const container = document.getElementById('edit-names-container');
+      let html = '';
+      tournament.players.forEach(p => {
+        html += `
+          <div class="player-input-card">
+            <span class="player-id-badge">#${p.id}</span>
+            <input type="text" class="player-name-input" id="edit-player-${p.id}" value="${p.name}" placeholder="Player name">
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      document.getElementById('modal-edit-names').classList.add('active');
+    }
+
+    function closeEditNamesModal() {
+      document.getElementById('modal-edit-names').classList.remove('active');
+    }
+
+    function saveEditedPlayerNames() {
+      tournament.players.forEach(p => {
+        const input = document.getElementById(`edit-player-${p.id}`);
+        if (input && input.value.trim()) {
+          p.name = input.value.trim();
+        }
+      });
+
+      saveTournamentToStorage();
+      closeEditNamesModal();
+      renderActiveRound();
+      showToast("Player names updated!");
+    }
+
+    function openPastScoresModal() {
+      const container = document.getElementById('past-scores-container');
+      const ptsLabel = tournament.byeScoringMode === 'player_avg' ? "Player's Avg PPG" : (tournament.byePoints > 0 ? `+${tournament.byePoints} pts` : `0 pts`);
+
+      if (tournament.roundsData.length === 0) {
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 30px 0;">No completed rounds yet. Scores will appear here after finishing Round 1.</p>`;
+      } else {
+        let html = '';
+        tournament.roundsData.forEach((r, rIdx) => {
+          html += `
+            <div class="round-accordion-item">
+              <div class="round-accordion-header" onclick="togglePastRoundAccordion(${rIdx})">
+                <span>🏆 Round ${rIdx + 1} Scores</span>
+                <span>▼</span>
+              </div>
+              <div class="round-accordion-body ${rIdx === tournament.roundsData.length - 1 ? 'open' : ''}" id="round-body-${rIdx}">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+          `;
+
+          r.courts.forEach((c, cIdx) => {
+            const pA1 = getPlayer(c.teamA[0]);
+            const pA2 = getPlayer(c.teamA[1]);
+            const pB1 = getPlayer(c.teamB[0]);
+            const pB2 = getPlayer(c.teamB[1]);
+
+            html += `
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #f8fafc; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); flex-wrap: wrap;">
+                <div style="font-weight: 700; font-size: 0.85rem; min-width: 110px;">
+                  ${c.isKingCourt ? '👑 ' : ''}${c.courtName}
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.82rem; font-weight: 600;">${pA1.name} & ${pA2.name}</span>
+                  <input type="number" min="0" max="99" style="width: 50px; height: 34px; text-align: center; font-weight: 800; border: 1.5px solid var(--border); border-radius: 6px;" 
+                         id="past-r${rIdx}-c${cIdx}-scoreA" value="${c.scoreA}">
+                </div>
+                <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8;">VS</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="number" min="0" max="99" style="width: 50px; height: 34px; text-align: center; font-weight: 800; border: 1.5px solid var(--border); border-radius: 6px;" 
+                         id="past-r${rIdx}-c${cIdx}-scoreB" value="${c.scoreB}">
+                  <span style="font-size: 0.82rem; font-weight: 600;">${pB1.name} & ${pB2.name}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          if (r.byes.length > 0) {
+            const byeNames = r.byes.map(pid => getPlayer(pid).name).join(', ');
+            html += `
+              <div style="font-size: 0.8rem; color: #713f12; background: #fefce8; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid #fde047;">
+                🪑 <strong>Byes (${ptsLabel}):</strong> ${byeNames}
+              </div>
+            `;
+          }
+
+          html += `
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      }
+
+      document.getElementById('modal-past-scores').classList.add('active');
+    }
+
+    function togglePastRoundAccordion(rIdx) {
+      const body = document.getElementById(`round-body-${rIdx}`);
+      if (body) body.classList.toggle('open');
+    }
+
+    function closePastScoresModal() {
+      document.getElementById('modal-past-scores').classList.remove('active');
+    }
+
+    function savePastScoresModifications() {
+      tournament.roundsData.forEach((r, rIdx) => {
+        r.courts.forEach((c, cIdx) => {
+          const inputA = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreA`);
+          const inputB = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreB`);
+          if (inputA && inputB) {
+            c.scoreA = parseInt(inputA.value, 10) || 0;
+            c.scoreB = parseInt(inputB.value, 10) || 0;
+          }
+        });
+      });
+
+      // If tournament is completed, sync the active view inputs with edited final round scores
+      if (tournament.isCompleted && tournament.roundsData.length >= tournament.totalRounds) {
+        const lastRound = tournament.roundsData[tournament.roundsData.length - 1];
+        lastRound.courts.forEach((c, idx) => {
+          const inA = document.getElementById(`court-${idx}-scoreA`);
+          const inB = document.getElementById(`court-${idx}-scoreB`);
+          if (inA) inA.value = c.scoreA;
+          if (inB) inB.value = c.scoreB;
+        });
+      }
+
+      recalculateAllScores();
+      saveTournamentToStorage();
+      closePastScoresModal();
+      showToast("Past scores saved & standings updated!");
+    }
+
+    function confirmResetTournament() {
+      if (confirm("Are you sure you want to start a new tournament? Current match data and saved scores will be reset.")) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        location.reload();
+      }
+    }
+
+    /* ==========================================================================
+       CSV EXPORT ENGINE
+       ========================================================================== */
+
+    function exportTournamentCSV() {
+      recalculateAllScores();
+
+      // Sort players by total score descending
+      const sorted = [...tournament.players].sort((a, b) => {
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        return a.id - b.id;
+      });
+
+      const lines = [];
+
+      // Header Metadata
+      lines.push(`"Pickleball King of the Court Tournament Results"`);
+      lines.push(`"Export Date","${new Date().toLocaleString()}"`);
+      lines.push(`"Total Players","${tournament.playerCount}","Number of Courts","${tournament.courtCount}","Rounds Completed","${tournament.roundsData.length}"`);
+      lines.push(``);
+
+      // 1. FINAL STANDINGS
+      lines.push(`"=== FINAL STANDINGS ==="`);
+      lines.push(`"Rank","Player ID","Player Name","Total Points","Rounds Played","Byes Received","Avg Points/Round"`);
+      sorted.forEach((p, idx) => {
+        const totalRoundsCount = p.roundsPlayed + p.byesReceived;
+        const avg = totalRoundsCount > 0 ? (p.totalScore / totalRoundsCount).toFixed(1) : '0.0';
+        const cleanName = (p.name || '').replace(/"/g, '""');
+        lines.push(`"${idx + 1}","${p.id}","${cleanName}","${p.totalScore}","${p.roundsPlayed}","${p.byesReceived}","${avg}"`);
+      });
+      lines.push(``);
+
+      // 2. ROUND-BY-ROUND SCORES MATRIX
+      lines.push(`"=== ROUND-BY-ROUND SCORES MATRIX ==="`);
+      const roundHeaders = [`"Player ID"`, `"Player Name"`];
+      for (let r = 1; r <= tournament.roundsData.length; r++) {
+        roundHeaders.push(`"Round ${r}"`);
+      }
+      roundHeaders.push(`"Total Score"`);
+      lines.push(roundHeaders.join(','));
+
+      sorted.forEach(p => {
+        const row = [`"${p.id}"`, `"${(p.name || '').replace(/"/g, '""')}"`];
+        tournament.roundsData.forEach(r => {
+          let roundScore = 0;
+          let found = false;
+
+          // Check courts
+          r.courts.forEach(c => {
+            if (c.teamA.includes(p.id)) {
+              roundScore = parseInt(c.scoreA, 10) || 0;
+              found = true;
+            } else if (c.teamB.includes(p.id)) {
+              roundScore = parseInt(c.scoreB, 10) || 0;
+              found = true;
+            }
+          });
+
+          // Check byes
+          if (!found && r.byes.includes(p.id)) {
+            roundScore = tournament.byeScoringMode === 'fixed' 
+              ? (tournament.byePoints !== undefined ? tournament.byePoints : 7)
+              : p.avgScore;
+            found = true;
+          }
+
+          row.push(`"${roundScore}"`);
+        });
+        row.push(`"${p.totalScore}"`);
+        lines.push(row.join(','));
+      });
+      lines.push(``);
+
+      // 3. DETAILED MATCH RESULTS
+      lines.push(`"=== DETAILED MATCH RESULTS ==="`);
+      lines.push(`"Round","Court","Team A","Score A","Score B","Team B","Winner","Byes (Resting)"`);
+      tournament.roundsData.forEach((r, rIdx) => {
+        const byeNames = r.byes.map(pid => getPlayer(pid).name).join(' & ').replace(/"/g, '""');
+        r.courts.forEach(c => {
+          const pA1 = getPlayer(c.teamA[0]).name.replace(/"/g, '""');
+          const pA2 = getPlayer(c.teamA[1]).name.replace(/"/g, '""');
+          const pB1 = getPlayer(c.teamB[0]).name.replace(/"/g, '""');
+          const pB2 = getPlayer(c.teamB[1]).name.replace(/"/g, '""');
+          const scoreA = parseInt(c.scoreA, 10) || 0;
+          const scoreB = parseInt(c.scoreB, 10) || 0;
+          const winner = scoreA > scoreB ? `${pA1} & ${pA2}` : `${pB1} & ${pB2}`;
+
+          lines.push(`"${rIdx + 1}","${c.courtName}","${pA1} & ${pA2}","${scoreA}","${scoreB}","${pB1} & ${pB2}","${winner}","${byeNames || 'None'}"`);
+        });
+      });
+
+      // Trigger file download
+      const csvContent = lines.join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `pickleball_tournament_results_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast("📥 Tournament CSV downloaded successfully!");
+    }
+
+    /* ==========================================================================
+       COURTSIDE MATCH TIMER
+       ========================================================================== */
+
+    function toggleTimer() {
+      if (tournament.timerRunning) {
+        clearInterval(tournament.timerInterval);
+        tournament.timerRunning = false;
+        document.getElementById('btn-timer-toggle').innerText = '▶ Start';
+        document.getElementById('timer-display').classList.remove('running');
+      } else {
+        tournament.timerRunning = true;
+        document.getElementById('btn-timer-toggle').innerText = '⏸ Pause';
+        document.getElementById('timer-display').classList.add('running');
+        document.getElementById('timer-display').classList.remove('ended');
+
+        tournament.timerInterval = setInterval(() => {
+          if (tournament.timerSeconds > 0) {
+            tournament.timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(tournament.timerInterval);
+            tournament.timerRunning = false;
+            document.getElementById('btn-timer-toggle').innerText = '▶ Start';
+            document.getElementById('timer-display').classList.remove('running');
+            document.getElementById('timer-display').classList.add('ended');
+            playBuzzerSound();
+            showToast("⏰ Time's up! Complete round scores.");
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(tournament.timerInterval);
+      tournament.timerRunning = false;
+      const gameMins = parseInt(document.getElementById('game-duration')?.value, 10) || 12;
+      tournament.timerSeconds = gameMins * 60;
+      document.getElementById('btn-timer-toggle').innerText = '▶ Start';
+      document.getElementById('timer-display').classList.remove('running', 'ended');
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(tournament.timerSeconds / 60);
+      const secs = tournament.timerSeconds % 60;
+      document.getElementById('timer-display').innerText = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function playBuzzerSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+      } catch (e) {
+        // AudioContext not allowed before user interaction
+      }
+    }
+
+    /* ==========================================================================
+       TOAST UTILITY
+       ========================================================================== */
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>💬</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
