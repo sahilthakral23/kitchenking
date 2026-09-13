@@ -1173,6 +1173,15 @@
         <button class="btn btn-accent" id="btn-show-leaderboard" onclick="openLeaderboardModal()">
           🏆 Leaderboard
         </button>
+        <button class="btn btn-outline" id="btn-export-rounds-pdf" onclick="exportTournamentPDF()" title="Export All Rounds Information, Standings & Scorecards in a Single Master PDF">
+          📄 Print All Rounds PDF
+        </button>
+        <button class="btn btn-outline" id="btn-export-csv" onclick="exportTournamentCSV()" title="Export Tournament Results & State to CSV">
+          📥 Export CSV
+        </button>
+        <button class="btn btn-outline" id="btn-restore-csv" onclick="triggerImportCSV()" title="Restore Tournament Session from CSV File">
+          📤 Restore Session (CSV)
+        </button>
         <button class="btn btn-outline" id="btn-edit-names" onclick="openEditNamesModal()" style="display: none;">
           ✏️ Edit Names
         </button>
@@ -1184,6 +1193,7 @@
         </button>
       </div>
     </header>
+    <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display: none;" onchange="handleCSVFileImport(event)">
 
     <!-- VIEW 1: TOURNAMENT SETUP -->
     <main id="setup-view">
@@ -1271,20 +1281,34 @@
         </div>
 
         <!-- PLAYER ROSTER -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 8px;">
           <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: #334155;">
-            👥 Player Roster
+            👥 Player Roster (<span id="roster-count-badge">14 Players</span>)
           </h3>
-          <button class="btn btn-secondary btn-sm" onclick="fillSampleNames()">
-            🎲 Fill Sample Names
-          </button>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="addPlayerSetup()">
+              ➕ Add Player
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="removePlayerSetup()">
+              ➖ Remove
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="fillSampleNames()">
+              🎲 Fill Sample Names
+            </button>
+          </div>
         </div>
 
         <div class="player-inputs-grid" id="player-inputs-container">
           <!-- Dynamically populated -->
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline btn-lg" onclick="triggerImportCSV()" title="Restore previous session by uploading a CSV file">
+            📤 Restore from CSV
+          </button>
+          <button type="button" class="btn btn-outline btn-lg" onclick="exportTournamentPDF()">
+            📄 Print All Rounds & Scorecards PDF
+          </button>
           <button class="btn btn-primary btn-lg" onclick="startTournament()">
             🚀 Start Tournament
           </button>
@@ -1336,7 +1360,13 @@
       </div>
 
       <!-- SUBMIT ROUND BUTTON -->
-      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 24px;" id="round-action-container">
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;" id="round-action-container">
+        <button type="button" class="btn btn-outline btn-lg" onclick="exportTournamentCSV()" title="Export Tournament Standings & Match Scores as CSV">
+          📥 Export CSV
+        </button>
+        <button type="button" class="btn btn-outline btn-lg" onclick="exportTournamentPDF()">
+          📄 Print All Rounds PDF
+        </button>
         <button class="btn btn-primary btn-lg" id="btn-submit-round" onclick="submitRoundScores()">
           ✓ Complete Round & Review Rotations ➔
         </button>
@@ -1396,9 +1426,14 @@
         </div>
       </div>
       <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <button class="btn btn-outline btn-sm" onclick="exportTournamentCSV()">
-          📥 Download CSV
-        </button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportTournamentCSV()">
+            📥 Download CSV
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="exportTournamentPDF()">
+            📄 All Rounds PDF
+          </button>
+        </div>
         <button class="btn btn-secondary" onclick="closeLeaderboardModal()">Close</button>
       </div>
     </div>
@@ -1412,16 +1447,26 @@
         <button class="modal-close" onclick="closeEditNamesModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
-          Updates player names across the current tournament without affecting existing scores.
-        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+            Update player names or add new players to the tournament.
+          </p>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addNewPlayerToEditModal()">
+            ➕ Add New Player
+          </button>
+        </div>
         <div class="player-inputs-grid" id="edit-names-container">
           <!-- Dynamically filled -->
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeEditNamesModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveEditedPlayerNames()">Save Changes</button>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="addNewPlayerToEditModal()">
+          ➕ Add New Player
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary" onclick="closeEditNamesModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveEditedPlayerNames()">Save Changes</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1436,9 +1481,19 @@
       <div class="modal-body" id="past-scores-container">
         <!-- Dynamically filled with round accordions -->
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closePastScoresModal()">Close</button>
-        <button class="btn btn-primary" onclick="savePastScoresModifications()">Save & Recalculate Standings</button>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportTournamentCSV()">
+            📥 Download CSV
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="exportTournamentPDF()">
+            📄 All Rounds PDF
+          </button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary" onclick="closePastScoresModal()">Close</button>
+          <button class="btn btn-primary" onclick="savePastScoresModifications()">Save & Recalculate Standings</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1469,6 +1524,7 @@
       roundsData: [],               // Historic records of all completed rounds
       currentRoundLayout: null,     // Current court assignments & bye list
       pendingNextLayout: null,      // Rotated layout prepared for next round
+      scheduledRounds: [],          // Full pre-generated balanced schedule for all rounds
       timerSeconds: 12 * 60,
       timerRunning: false,
       timerInterval: null
@@ -1499,6 +1555,7 @@
           roundsData: tournament.roundsData,
           currentRoundLayout: tournament.currentRoundLayout,
           pendingNextLayout: tournament.pendingNextLayout,
+          scheduledRounds: tournament.scheduledRounds || [],
           isCompleted: !!tournament.isCompleted,
           timerSeconds: tournament.timerSeconds,
           savedAt: Date.now()
@@ -1528,15 +1585,23 @@
         tournament.roundsData = data.roundsData || [];
         tournament.currentRoundLayout = data.currentRoundLayout;
         tournament.pendingNextLayout = data.pendingNextLayout || null;
+        tournament.scheduledRounds = data.scheduledRounds || [];
         tournament.isCompleted = !!data.isCompleted;
         tournament.timerSeconds = data.timerSeconds !== undefined ? data.timerSeconds : 12 * 60;
 
         // Switch to active scoring view
         document.getElementById('setup-view').style.display = 'none';
         document.getElementById('scoring-view').style.display = 'block';
-        document.getElementById('btn-edit-names').style.display = 'inline-flex';
-        document.getElementById('btn-past-scores').style.display = 'inline-flex';
-        document.getElementById('btn-reset-game').style.display = 'inline-flex';
+        const pdfBtn = document.getElementById('btn-export-rounds-pdf');
+        if (pdfBtn) pdfBtn.style.display = 'inline-flex';
+        const csvBtn = document.getElementById('btn-export-csv');
+        if (csvBtn) csvBtn.style.display = 'inline-flex';
+        const editBtn = document.getElementById('btn-edit-names');
+        if (editBtn) editBtn.style.display = 'inline-flex';
+        const pastBtn = document.getElementById('btn-past-scores');
+        if (pastBtn) pastBtn.style.display = 'inline-flex';
+        const resetBtn = document.getElementById('btn-reset-game');
+        if (resetBtn) resetBtn.style.display = 'inline-flex';
 
         recalculateAllScores();
         renderActiveRound();
@@ -1565,6 +1630,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                   <button class="btn btn-outline" onclick="exportTournamentCSV()">📥 Download CSV</button>
+                  <button class="btn btn-outline" onclick="exportTournamentPDF()">📄 All Rounds PDF</button>
                   <button class="btn btn-outline" onclick="openPastScoresModal()">📋 Edit Past Scores</button>
                   <button class="btn btn-primary" onclick="openLeaderboardModal()">🏆 View Final Standings</button>
                 </div>
@@ -1704,9 +1770,21 @@
 
     function renderSetupPlayerInputs(count) {
       const container = document.getElementById('player-inputs-container');
+      const badge = document.getElementById('roster-count-badge');
+      if (badge) badge.innerText = `${count} Players`;
+
+      // Preserve currently entered names so user input isn't wiped out
+      const existingNames = {};
+      for (let i = 1; i <= 64; i++) {
+        const input = document.getElementById(`setup-player-${i}`);
+        if (input && input.value.trim() && !input.value.startsWith('Player ')) {
+          existingNames[i] = input.value.trim();
+        }
+      }
+
       let html = '';
       for (let i = 1; i <= count; i++) {
-        const defaultName = `Player ${i}`;
+        const defaultName = existingNames[i] || `Player ${i}`;
         html += `
           <div class="player-input-card">
             <span class="player-id-badge">#${i}</span>
@@ -1715,6 +1793,48 @@
         `;
       }
       container.innerHTML = html;
+    }
+
+    function addPlayerSetup() {
+      const select = document.getElementById('player-count');
+      const currentCount = parseInt(select.value, 10);
+      if (currentCount >= 32) {
+        showToast("Maximum 32 players supported.");
+        return;
+      }
+      const newCount = currentCount + 1;
+
+      let optionExists = false;
+      for (let opt of select.options) {
+        if (parseInt(opt.value, 10) === newCount) {
+          optionExists = true;
+          break;
+        }
+      }
+      if (!optionExists) {
+        const newOpt = document.createElement('option');
+        newOpt.value = String(newCount);
+        const courts = Math.floor(newCount / 4);
+        const byes = newCount - (courts * 4);
+        newOpt.text = `${newCount} Players (${courts} Courts${byes > 0 ? ' + ' + byes + ' Bye' + (byes > 1 ? 's' : '') : ''})`;
+        select.appendChild(newOpt);
+      }
+      select.value = String(newCount);
+      handlePlayerCountChange();
+      showToast(`Added Player #${newCount}`);
+    }
+
+    function removePlayerSetup() {
+      const select = document.getElementById('player-count');
+      const currentCount = parseInt(select.value, 10);
+      if (currentCount <= 8) {
+        showToast("Minimum 8 players required.");
+        return;
+      }
+      const newCount = currentCount - 1;
+      select.value = String(newCount);
+      handlePlayerCountChange();
+      showToast(`Removed player (${newCount} total)`);
     }
 
     function fillSampleNames() {
@@ -1772,13 +1892,22 @@
 
       // Generate initial Round 1 layout
       tournament.currentRoundLayout = generateInitialRoundLayout(tournament.players, cCount);
+      // Pre-generate full balanced schedule for all rounds from the start
+      tournament.scheduledRounds = generateFullTournamentSchedule(tournament.players, cCount, rounds, tournament.currentRoundLayout);
 
       // Switch views
       document.getElementById('setup-view').style.display = 'none';
       document.getElementById('scoring-view').style.display = 'block';
-      document.getElementById('btn-edit-names').style.display = 'inline-flex';
-      document.getElementById('btn-past-scores').style.display = 'inline-flex';
-      document.getElementById('btn-reset-game').style.display = 'inline-flex';
+      const pdfBtn = document.getElementById('btn-export-rounds-pdf');
+      if (pdfBtn) pdfBtn.style.display = 'inline-flex';
+      const csvBtn = document.getElementById('btn-export-csv');
+      if (csvBtn) csvBtn.style.display = 'inline-flex';
+      const editBtn = document.getElementById('btn-edit-names');
+      if (editBtn) editBtn.style.display = 'inline-flex';
+      const pastBtn = document.getElementById('btn-past-scores');
+      if (pastBtn) pastBtn.style.display = 'inline-flex';
+      const resetBtn = document.getElementById('btn-reset-game');
+      if (resetBtn) resetBtn.style.display = 'inline-flex';
 
       renderActiveRound();
       saveTournamentToStorage();
@@ -1803,7 +1932,7 @@
       for (let c = 1; c <= courtCount; c++) {
         courts.push({
           courtNum: c,
-          courtName: c === 1 ? "Court 1 (King)" : `Court ${c}`,
+          courtName: `Court-${c}`,
           isKingCourt: c === 1,
           teamA: [shuffledPlayers[playerIdx].id, shuffledPlayers[playerIdx + 1].id],
           teamB: [shuffledPlayers[playerIdx + 2].id, shuffledPlayers[playerIdx + 3].id],
@@ -1826,9 +1955,168 @@
       };
     }
 
+    /* --- BALANCED FULL SCHEDULE GENERATOR (ALL ROUNDS WITH AUTO-FILLED PLAYERS) --- */
+    function generateFullTournamentSchedule(players, courtCount, totalRounds, initialRound1) {
+      if (!players || players.length === 0) return [];
+      const pCount = players.length;
+      const numCourts = courtCount;
+      const activeCount = numCourts * 4;
+      const byeCount = Math.max(0, pCount - activeCount);
+
+      const partnerCount = {};
+      const opponentCount = {};
+      const courtPlayCount = {};
+      const byeCounts = {};
+      const lastByeRound = {};
+
+      players.forEach(p => {
+        partnerCount[p.id] = {};
+        opponentCount[p.id] = {};
+        courtPlayCount[p.id] = {};
+        byeCounts[p.id] = 0;
+        lastByeRound[p.id] = -999;
+        for (let c = 1; c <= numCourts; c++) courtPlayCount[p.id][c] = 0;
+        players.forEach(p2 => {
+          partnerCount[p.id][p2.id] = 0;
+          opponentCount[p.id][p2.id] = 0;
+        });
+      });
+
+      function recordMatchup(cNum, tA, tB) {
+        if (!tA || !tB || tA.length < 2 || tB.length < 2) return;
+        partnerCount[tA[0]][tA[1]] = (partnerCount[tA[0]][tA[1]] || 0) + 1;
+        partnerCount[tA[1]][tA[0]] = (partnerCount[tA[1]][tA[0]] || 0) + 1;
+        partnerCount[tB[0]][tB[1]] = (partnerCount[tB[0]][tB[1]] || 0) + 1;
+        partnerCount[tB[1]][tB[0]] = (partnerCount[tB[1]][tB[0]] || 0) + 1;
+
+        tA.forEach(a => {
+          tB.forEach(b => {
+            opponentCount[a][b] = (opponentCount[a][b] || 0) + 1;
+            opponentCount[b][a] = (opponentCount[b][a] || 0) + 1;
+          });
+        });
+
+        [...tA, ...tB].forEach(pid => {
+          courtPlayCount[pid][cNum] = (courtPlayCount[pid][cNum] || 0) + 1;
+        });
+      }
+
+      const rounds = [];
+
+      for (let r = 1; r <= totalRounds; r++) {
+        if (r === 1 && initialRound1 && initialRound1.courts && initialRound1.courts.length === numCourts && initialRound1.courts[0].teamA && initialRound1.courts[0].teamA.length >= 2) {
+          initialRound1.courts.forEach(c => {
+            recordMatchup(c.courtNum, c.teamA, c.teamB);
+          });
+          (initialRound1.byes || []).forEach(pid => {
+            byeCounts[pid] = (byeCounts[pid] || 0) + 1;
+            lastByeRound[pid] = 1;
+          });
+          rounds.push(JSON.parse(JSON.stringify(initialRound1)));
+          continue;
+        }
+
+        // 1. Strict Fair Bye Selection: min byes first, then longest time since last bye
+        let roundByes = [];
+        if (byeCount > 0) {
+          const candidates = [...players].sort((a, b) => {
+            const bCountA = byeCounts[a.id] || 0;
+            const bCountB = byeCounts[b.id] || 0;
+            if (bCountA !== bCountB) return bCountA - bCountB;
+            return (lastByeRound[a.id] || 0) - (lastByeRound[b.id] || 0);
+          });
+          roundByes = candidates.slice(0, byeCount).map(p => p.id);
+          roundByes.forEach(pid => {
+            byeCounts[pid] = (byeCounts[pid] || 0) + 1;
+            lastByeRound[pid] = r;
+          });
+        }
+
+        const byeSet = new Set(roundByes);
+        const activePool = players.filter(p => !byeSet.has(p.id)).map(p => p.id);
+
+        // 2. Optimized Pairing into Courts and Teams
+        let bestAssignment = null;
+        let bestCost = Infinity;
+
+        const iterations = Math.min(120, Math.max(40, activePool.length * 8));
+        for (let trial = 0; trial < iterations; trial++) {
+          const shuffled = [...activePool].sort(() => Math.random() - 0.5);
+          let trialCost = 0;
+          const trialCourts = [];
+
+          for (let c = 1; c <= numCourts; c++) {
+            const p1 = shuffled[(c - 1) * 4];
+            const p2 = shuffled[(c - 1) * 4 + 1];
+            const p3 = shuffled[(c - 1) * 4 + 2];
+            const p4 = shuffled[(c - 1) * 4 + 3];
+
+            const opts = [
+              { tA: [p1, p2], tB: [p3, p4] },
+              { tA: [p1, p3], tB: [p2, p4] },
+              { tA: [p1, p4], tB: [p2, p3] }
+            ];
+
+            let bestSubOpt = null;
+            let bestSubCost = Infinity;
+
+            opts.forEach(opt => {
+              const partCost = ((partnerCount[opt.tA[0]][opt.tA[1]] || 0) * 25) + ((partnerCount[opt.tB[0]][opt.tB[1]] || 0) * 25);
+              const oppCost = (
+                (opponentCount[opt.tA[0]][opt.tB[0]] || 0) +
+                (opponentCount[opt.tA[0]][opt.tB[1]] || 0) +
+                (opponentCount[opt.tA[1]][opt.tB[0]] || 0) +
+                (opponentCount[opt.tA[1]][opt.tB[1]] || 0)
+              ) * 5;
+              const crtCost = (
+                (courtPlayCount[opt.tA[0]][c] || 0) +
+                (courtPlayCount[opt.tA[1]][c] || 0) +
+                (courtPlayCount[opt.tB[0]][c] || 0) +
+                (courtPlayCount[opt.tB[1]][c] || 0)
+              ) * 8;
+              const cost = partCost + oppCost + crtCost;
+              if (cost < bestSubCost) {
+                bestSubCost = cost;
+                bestSubOpt = opt;
+              }
+            });
+
+            trialCost += bestSubCost;
+            trialCourts.push({
+              courtNum: c,
+              courtName: `Court-${c}`,
+              isKingCourt: c === 1,
+              teamA: bestSubOpt.tA,
+              teamB: bestSubOpt.tB,
+              scoreA: '',
+              scoreB: ''
+            });
+          }
+
+          if (trialCost < bestCost) {
+            bestCost = trialCost;
+            bestAssignment = trialCourts;
+          }
+        }
+
+        bestAssignment.forEach(c => {
+          recordMatchup(c.courtNum, c.teamA, c.teamB);
+        });
+
+        rounds.push({
+          roundNumber: r,
+          courts: bestAssignment,
+          byes: roundByes
+        });
+      }
+
+      return rounds;
+    }
+
     function reshuffleRound1() {
       if (tournament.currentRound !== 1 || tournament.roundsData.length > 0) return;
       tournament.currentRoundLayout = generateInitialRoundLayout(tournament.players, tournament.courtCount);
+      tournament.scheduledRounds = generateFullTournamentSchedule(tournament.players, tournament.courtCount, tournament.totalRounds, tournament.currentRoundLayout);
       renderActiveRound();
       saveTournamentToStorage();
       showToast("🎲 Starting matchups randomly shuffled!");
@@ -1864,9 +2152,15 @@
               <div class="court-title-group">
                 <span class="court-title">${c.isKingCourt ? '👑 ' : '🏸 '}${c.courtName}</span>
               </div>
-              <span class="court-badge ${c.isKingCourt ? 'badge-king' : 'badge-court'}">
-                ${c.isKingCourt ? 'King of Court' : `Court ${c.courtNum}`}
-              </span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" class="btn btn-outline btn-sm" style="padding: 3px 8px; font-size: 0.72rem; font-weight: 700; background: #ffffff;" 
+                        onclick="exportSingleGameScorecardPDF(${rNum}, ${idx})" title="Print or Save Scorecard PDF for this Game">
+                  📄 Scorecard PDF
+                </button>
+                <span class="court-badge badge-court">
+                  Court-${c.courtNum}
+                </span>
+              </div>
             </div>
 
             <div class="matchup-container">
@@ -2073,6 +2367,7 @@
               </div>
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="btn btn-outline" onclick="exportTournamentCSV()">📥 Download CSV</button>
+                <button class="btn btn-outline" onclick="exportTournamentPDF()">📄 All Rounds PDF</button>
                 <button class="btn btn-outline" onclick="openPastScoresModal()">📋 Edit Past Scores</button>
                 <button class="btn btn-primary" onclick="openLeaderboardModal()">🏆 View Final Standings</button>
               </div>
@@ -2131,7 +2426,7 @@
 
         nextCourts.push({
           courtNum: 1,
-          courtName: "Court 1 (King)",
+          courtName: "Court-1",
           isKingCourt: true,
           teamA: [c1Winners[0], c2Winners[0]],
           teamB: [c1Winners[1], c2Winners[1]],
@@ -2146,7 +2441,7 @@
 
           nextCourts.push({
             courtNum: c,
-            courtName: `Court ${c}`,
+            courtName: `Court-${c}`,
             isKingCourt: false,
             teamA: [movingDownLosers[0], movingUpWinners[0]],
             teamB: [movingDownLosers[1], movingUpWinners[1]],
@@ -2161,7 +2456,7 @@
 
         nextCourts.push({
           courtNum: numCourts,
-          courtName: `Court ${numCourts}`,
+          courtName: `Court-${numCourts}`,
           isKingCourt: false,
           teamA: [movingDownLosersToBottom[0], bottomCourtLosers[0]],
           teamB: [movingDownLosersToBottom[1], bottomCourtLosers[1]],
@@ -2230,7 +2525,7 @@
 
       nextCourts.push({
         courtNum: 1,
-        courtName: "Court 1 (King)",
+        courtName: "Court-1",
         isKingCourt: true,
         teamA: [court1Players[0], court1Players[2]],
         teamB: [court1Players[1], court1Players[3]],
@@ -2253,7 +2548,7 @@
 
         nextCourts.push({
           courtNum: c,
-          courtName: `Court ${c}`,
+          courtName: `Court-${c}`,
           isKingCourt: false,
           teamA: [courtCPlayers[0], courtCPlayers[2]],
           teamB: [courtCPlayers[1], courtCPlayers[3]],
@@ -2266,7 +2561,7 @@
       const remainingForBottom = activePool.filter(pid => !assigned.has(pid));
       nextCourts.push({
         courtNum: numCourts,
-        courtName: `Court ${numCourts}`,
+        courtName: `Court-${numCourts}`,
         isKingCourt: false,
         teamA: [remainingForBottom[0], remainingForBottom[1]],
         teamB: [remainingForBottom[2], remainingForBottom[3]],
@@ -2511,12 +2806,15 @@
       document.getElementById('modal-leaderboard').classList.remove('active');
     }
 
+    let editModalPlayerCount = 0;
+
     function openEditNamesModal() {
       const container = document.getElementById('edit-names-container');
+      editModalPlayerCount = tournament.players.length;
       let html = '';
       tournament.players.forEach(p => {
         html += `
-          <div class="player-input-card">
+          <div class="player-input-card" id="edit-card-${p.id}">
             <span class="player-id-badge">#${p.id}</span>
             <input type="text" class="player-name-input" id="edit-player-${p.id}" value="${p.name}" placeholder="Player name">
           </div>
@@ -2526,11 +2824,34 @@
       document.getElementById('modal-edit-names').classList.add('active');
     }
 
+    function addNewPlayerToEditModal() {
+      editModalPlayerCount++;
+      const nextId = editModalPlayerCount;
+      const container = document.getElementById('edit-names-container');
+      const div = document.createElement('div');
+      div.className = 'player-input-card';
+      div.id = `edit-card-${nextId}`;
+      div.style.border = '2px dashed var(--primary)';
+      div.innerHTML = `
+        <span class="player-id-badge" style="background: var(--primary); color: white;">#${nextId}</span>
+        <input type="text" class="player-name-input" id="edit-player-${nextId}" value="Player ${nextId}" placeholder="Enter new player name" style="font-weight: 700;">
+      `;
+      container.appendChild(div);
+      div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      const inEl = document.getElementById(`edit-player-${nextId}`);
+      if (inEl) {
+        inEl.focus();
+        inEl.select();
+      }
+      showToast(`Added input for Player #${nextId}`);
+    }
+
     function closeEditNamesModal() {
       document.getElementById('modal-edit-names').classList.remove('active');
     }
 
     function saveEditedPlayerNames() {
+      // 1. Update existing players
       tournament.players.forEach(p => {
         const input = document.getElementById(`edit-player-${p.id}`);
         if (input && input.value.trim()) {
@@ -2538,10 +2859,34 @@
         }
       });
 
+      // 2. Add any newly added players from the modal
+      const currentCount = tournament.players.length;
+      for (let i = currentCount + 1; i <= editModalPlayerCount; i++) {
+        const input = document.getElementById(`edit-player-${i}`);
+        const newName = (input && input.value.trim()) ? input.value.trim() : `Player ${i}`;
+        
+        // Fair byes initialization (match minimum byes of active roster)
+        const byeList = tournament.players.map(p => p.byesReceived || 0);
+        const minByes = byeList.length > 0 ? Math.min(...byeList) : 0;
+
+        tournament.players.push({
+          id: i,
+          name: newName,
+          activeScore: 0,
+          totalScore: 0,
+          roundsPlayed: 0,
+          byesReceived: minByes,
+          avgScore: 0
+        });
+      }
+
+      tournament.playerCount = tournament.players.length;
+
+      recalculateAllScores();
       saveTournamentToStorage();
       closeEditNamesModal();
       renderActiveRound();
-      showToast("Player names updated!");
+      showToast("Player names & roster updated!");
     }
 
     function openPastScoresModal() {
@@ -2555,9 +2900,15 @@
         tournament.roundsData.forEach((r, rIdx) => {
           html += `
             <div class="round-accordion-item">
-              <div class="round-accordion-header" onclick="togglePastRoundAccordion(${rIdx})">
-                <span>🏆 Round ${rIdx + 1} Scores</span>
-                <span>▼</span>
+              <div class="round-accordion-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span onclick="togglePastRoundAccordion(${rIdx})" style="cursor: pointer; flex: 1;">🏆 Round ${rIdx + 1} Scores</span>
+                <div style="display: flex; align-items: center; gap: 8px;" onclick="event.stopPropagation();">
+                  <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 0.72rem; font-weight: 700; background: #fff;" 
+                          onclick="exportScorecardPDF(${rIdx + 1})" title="Print or Export Scorecard PDF for Round ${rIdx + 1}">
+                    📋 Scorecard PDF
+                  </button>
+                  <span onclick="togglePastRoundAccordion(${rIdx})" style="cursor: pointer;">▼</span>
+                </div>
               </div>
               <div class="round-accordion-body ${rIdx === tournament.roundsData.length - 1 ? 'open' : ''}" id="round-body-${rIdx}">
                 <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -2658,10 +3009,15 @@
     }
 
     /* ==========================================================================
-       CSV EXPORT ENGINE
+       CSV EXPORT & RESTORE SESSION ENGINE
        ========================================================================== */
 
     function exportTournamentCSV() {
+      if (!tournament || !tournament.players || tournament.players.length === 0) {
+        showToast("⚠️ No active tournament data to export yet.");
+        return;
+      }
+
       recalculateAllScores();
 
       // Sort players by total score descending
@@ -2675,7 +3031,7 @@
       // Header Metadata
       lines.push(`"Pickleball King of the Court Tournament Results"`);
       lines.push(`"Export Date","${new Date().toLocaleString()}"`);
-      lines.push(`"Total Players","${tournament.playerCount}","Number of Courts","${tournament.courtCount}","Rounds Completed","${tournament.roundsData.length}"`);
+      lines.push(`"Total Players","${tournament.playerCount}","Number of Courts","${tournament.courtCount}","Total Rounds","${tournament.totalRounds}","Rounds Completed","${tournament.roundsData.length}","Bye Policy","${tournament.byeScoringMode || 'player_avg'}","Bye Points","${tournament.byePoints !== undefined ? tournament.byePoints : 7}"`);
       lines.push(``);
 
       // 1. FINAL STANDINGS
@@ -2742,11 +3098,23 @@
           const pB2 = getPlayer(c.teamB[1]).name.replace(/"/g, '""');
           const scoreA = parseInt(c.scoreA, 10) || 0;
           const scoreB = parseInt(c.scoreB, 10) || 0;
-          const winner = scoreA > scoreB ? `${pA1} & ${pA2}` : `${pB1} & ${pB2}`;
+          const winner = scoreA > scoreB ? `${pA1} & ${pA2}` : (scoreB > scoreA ? `${pB1} & ${pB2}` : 'Tie');
 
           lines.push(`"${rIdx + 1}","${c.courtName}","${pA1} & ${pA2}","${scoreA}","${scoreB}","${pB1} & ${pB2}","${winner}","${byeNames || 'None'}"`);
         });
       });
+      lines.push(``);
+
+      // 4. EMBED EXACT SESSION BACKUP TOKEN
+      try {
+        const sessionJson = JSON.stringify(tournament);
+        const b64 = btoa(encodeURIComponent(sessionJson).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+          return String.fromCharCode(parseInt(p1, 16));
+        }));
+        lines.push(`# KOTC_SESSION_DATA:${b64}`);
+      } catch (e) {
+        console.warn("Could not encode full session snapshot into CSV comment:", e);
+      }
 
       // Trigger file download
       const csvContent = lines.join('\r\n');
@@ -2761,7 +3129,1032 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      showToast("📥 Tournament CSV downloaded successfully!");
+      showToast("📥 Tournament CSV exported successfully!");
+    }
+
+    function triggerImportCSV() {
+      const fileInput = document.getElementById('csv-file-input');
+      if (fileInput) {
+        fileInput.value = '';
+        fileInput.click();
+      }
+    }
+
+    function handleCSVFileImport(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        if (!text || !text.trim()) {
+          alert("The selected CSV file is empty.");
+          return;
+        }
+        try {
+          restoreTournamentFromCSV(text);
+        } catch (err) {
+          console.error("CSV restore error:", err);
+          alert("Failed to restore tournament session from CSV:\n" + err.message);
+        }
+      };
+      reader.onerror = function() {
+        alert("Failed to read the selected file. Please try again.");
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSV(text) {
+      const lines = [];
+      let row = [];
+      let inQuotes = false;
+      let currentField = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            currentField += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          row.push(currentField.trim());
+          currentField = '';
+        } else if ((char === '\r' || char === '\n') && !inQuotes) {
+          if (char === '\r' && nextChar === '\n') {
+            i++;
+          }
+          row.push(currentField.trim());
+          if (row.length > 1 || (row.length === 1 && row[0] !== '')) {
+            lines.push(row);
+          }
+          row = [];
+          currentField = '';
+        } else {
+          currentField += char;
+        }
+      }
+      if (currentField || row.length > 0) {
+        row.push(currentField.trim());
+        lines.push(row);
+      }
+      return lines;
+    }
+
+    function restoreTournamentFromCSV(csvText) {
+      if (tournament && tournament.players && tournament.players.length > 0 && tournament.roundsData && tournament.roundsData.length > 0) {
+        if (!confirm("Restoring from CSV will replace your current tournament session. Do you want to proceed?")) {
+          return;
+        }
+      }
+
+      // 1. Attempt exact session restore via embedded metadata
+      const sessionMatch = csvText.match(/#\s*KOTC_SESSION_DATA:([A-Za-z0-9+/=]+)/);
+      if (sessionMatch && sessionMatch[1]) {
+        try {
+          const jsonStr = decodeURIComponent(Array.prototype.map.call(atob(sessionMatch[1]), function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const parsed = JSON.parse(jsonStr);
+          if (parsed && Array.isArray(parsed.players) && parsed.players.length > 0) {
+            tournament = parsed;
+            if (!tournament.scheduledRounds || tournament.scheduledRounds.length === 0) {
+              tournament.scheduledRounds = generateFullTournamentSchedule(
+                tournament.players,
+                tournament.courtCount,
+                tournament.totalRounds,
+                tournament.currentRoundLayout
+              );
+            }
+            applyRestoredTournament("Exact CSV Session Snapshot");
+            return;
+          }
+        } catch (err) {
+          console.warn("Exact session restoration token parse failed, falling back to CSV table parsing:", err);
+        }
+      }
+
+      // 2. Tabular CSV parser fallback (for standard exports or edited CSV files)
+      const rows = parseCSV(csvText);
+      if (!rows || rows.length < 2) {
+        throw new Error("CSV file does not contain valid tabular tournament data.");
+      }
+
+      let totalPlayers = 0;
+      let numCourts = 0;
+      let totalRounds = 0;
+      let byeMode = 'player_avg';
+      let byePoints = 7;
+
+      // Scan metadata in first 8 rows
+      for (let i = 0; i < Math.min(8, rows.length); i++) {
+        const row = rows[i];
+        for (let j = 0; j < row.length; j++) {
+          const cell = (row[j] || '').toLowerCase();
+          if (cell.includes('total players')) {
+            totalPlayers = parseInt(row[j + 1], 10) || totalPlayers;
+          } else if (cell.includes('courts')) {
+            numCourts = parseInt(row[j + 1], 10) || numCourts;
+          } else if (cell.includes('total rounds')) {
+            totalRounds = parseInt(row[j + 1], 10) || totalRounds;
+          } else if (cell.includes('bye policy') || cell.includes('bye mode')) {
+            const val = (row[j + 1] || '').toLowerCase();
+            if (val.includes('fixed')) byeMode = 'fixed';
+            else byeMode = 'player_avg';
+          } else if (cell.includes('bye points')) {
+            byePoints = parseInt(row[j + 1], 10) || byePoints;
+          }
+        }
+      }
+
+      let currentSection = '';
+      const playersMap = new Map();
+      const playersById = new Map();
+      const matchRows = [];
+
+      for (let rIdx = 0; rIdx < rows.length; rIdx++) {
+        const row = rows[rIdx];
+        if (row.length === 0) continue;
+        const firstCell = (row[0] || '').trim();
+
+        if (firstCell.includes('=== FINAL STANDINGS ===') || firstCell.includes('=== CURRENT STANDINGS ===')) {
+          currentSection = 'standings';
+          continue;
+        } else if (firstCell.includes('=== ROUND-BY-ROUND SCORES MATRIX ===')) {
+          currentSection = 'matrix';
+          continue;
+        } else if (firstCell.includes('=== DETAILED MATCH RESULTS ===')) {
+          currentSection = 'matches';
+          continue;
+        } else if (firstCell.startsWith('===') || firstCell.startsWith('#')) {
+          currentSection = '';
+          continue;
+        }
+
+        if (currentSection === 'standings') {
+          if (firstCell.toLowerCase() === 'rank') continue;
+          const pId = parseInt(row[1], 10) || (playersMap.size + 1);
+          const pName = (row[2] || `Player ${pId}`).trim();
+          const totalScore = parseInt(row[3], 10) || 0;
+          const roundsPlayed = parseInt(row[4], 10) || 0;
+          const byesReceived = parseInt(row[5], 10) || 0;
+          const avgScore = parseFloat(row[6]) || 0;
+
+          const pObj = { id: pId, name: pName, activeScore: 0, totalScore, roundsPlayed, byesReceived, avgScore };
+          playersMap.set(pName.toLowerCase(), pObj);
+          playersById.set(pId, pObj);
+        } else if (currentSection === 'matrix') {
+          if (firstCell.toLowerCase().includes('player id')) continue;
+          const pId = parseInt(row[0], 10) || (playersMap.size + 1);
+          const pName = (row[1] || `Player ${pId}`).trim();
+          if (!playersMap.has(pName.toLowerCase())) {
+            const pObj = { id: pId, name: pName, activeScore: 0, totalScore: 0, roundsPlayed: 0, byesReceived: 0, avgScore: 0 };
+            playersMap.set(pName.toLowerCase(), pObj);
+            playersById.set(pId, pObj);
+          }
+        } else if (currentSection === 'matches') {
+          if (firstCell.toLowerCase() === 'round') continue;
+          matchRows.push(row);
+        }
+      }
+
+      function resolvePlayerId(nameStr) {
+        const clean = (nameStr || '').trim();
+        if (!clean || clean.toLowerCase() === 'none') return null;
+        const lower = clean.toLowerCase();
+        if (playersMap.has(lower)) {
+          return playersMap.get(lower).id;
+        }
+        const newId = playersById.size + 1;
+        const newP = { id: newId, name: clean, activeScore: 0, totalScore: 0, roundsPlayed: 0, byesReceived: 0, avgScore: 0 };
+        playersMap.set(lower, newP);
+        playersById.set(newId, newP);
+        return newId;
+      }
+
+      function parseTeamPlayers(teamStr) {
+        if (!teamStr || teamStr.trim().toLowerCase() === 'none') return [];
+        const parts = teamStr.split(/\s*&\s*|\s*,\s*|\s+and\s+/i);
+        return parts.map(p => resolvePlayerId(p)).filter(Boolean);
+      }
+
+      const roundsDataMap = new Map();
+      matchRows.forEach(row => {
+        const roundNum = parseInt(row[0], 10) || 1;
+        const courtName = row[1] || `Court-1`;
+        const courtNumMatch = courtName.match(/\d+/);
+        const courtNum = courtNumMatch ? parseInt(courtNumMatch[0], 10) : 1;
+        const teamA = parseTeamPlayers(row[2]);
+        const scoreA = row[3] !== undefined && row[3] !== '' ? parseInt(row[3], 10) : '';
+        const scoreB = row[4] !== undefined && row[4] !== '' ? parseInt(row[4], 10) : '';
+        const teamB = parseTeamPlayers(row[5]);
+        const byes = parseTeamPlayers(row[7]);
+
+        if (!roundsDataMap.has(roundNum)) {
+          roundsDataMap.set(roundNum, {
+            roundNumber: roundNum,
+            courts: [],
+            byes: []
+          });
+        }
+
+        const rObj = roundsDataMap.get(roundNum);
+        rObj.courts.push({
+          courtNum: courtNum,
+          courtName: `Court-${courtNum}`,
+          isKingCourt: courtNum === 1,
+          teamA: teamA,
+          teamB: teamB,
+          scoreA: scoreA,
+          scoreB: scoreB
+        });
+
+        byes.forEach(bid => {
+          if (!rObj.byes.includes(bid)) rObj.byes.push(bid);
+        });
+      });
+
+      const roundsData = Array.from(roundsDataMap.values()).sort((a, b) => a.roundNumber - b.roundNumber);
+      const playersList = Array.from(playersById.values()).sort((a, b) => a.id - b.id);
+
+      if (playersList.length < 4) {
+        throw new Error("Could not find at least 4 valid players in the CSV file.");
+      }
+
+      if (totalPlayers === 0) totalPlayers = playersList.length;
+      if (numCourts === 0) {
+        if (roundsData.length > 0 && roundsData[0].courts.length > 0) {
+          numCourts = roundsData[0].courts.length;
+        } else {
+          numCourts = Math.max(1, Math.floor(totalPlayers / 4));
+        }
+      }
+      if (totalRounds === 0) {
+        totalRounds = Math.max(roundsData.length, 7);
+      }
+
+      tournament.playerCount = totalPlayers;
+      tournament.courtCount = numCourts;
+      tournament.totalRounds = totalRounds;
+      tournament.byeScoringMode = byeMode;
+      tournament.byePoints = byePoints;
+      tournament.players = playersList;
+      tournament.roundsData = roundsData;
+
+      const isComplete = roundsData.length >= totalRounds && roundsData.length > 0;
+      tournament.isCompleted = isComplete;
+      tournament.currentRound = isComplete ? totalRounds : roundsData.length + 1;
+
+      if (roundsData.length > 0) {
+        const lastRound = roundsData[roundsData.length - 1];
+        if (isComplete) {
+          tournament.currentRoundLayout = lastRound;
+        } else {
+          tournament.currentRoundLayout = computeNextRoundRotations(lastRound);
+        }
+      } else {
+        tournament.currentRoundLayout = generateInitialRoundLayout(playersList, numCourts);
+      }
+
+      // Pre-generate full balanced schedule for all rounds
+      const fullSched = [];
+      for (let r = 0; r < roundsData.length; r++) {
+        fullSched.push(roundsData[r]);
+      }
+      if (!isComplete && tournament.currentRoundLayout) {
+        fullSched.push(tournament.currentRoundLayout);
+      }
+      if (fullSched.length < totalRounds) {
+        const futureRounds = generateFullTournamentSchedule(tournament.players, numCourts, totalRounds, tournament.currentRoundLayout);
+        for (let r = fullSched.length; r < totalRounds; r++) {
+          if (futureRounds[r]) {
+            fullSched.push(futureRounds[r]);
+          }
+        }
+      }
+      tournament.scheduledRounds = fullSched;
+
+      applyRestoredTournament("CSV Table Data");
+    }
+
+    function applyRestoredTournament(sourceDesc) {
+      // Sync configuration form inputs
+      const pCountInput = document.getElementById('player-count');
+      if (pCountInput) pCountInput.value = tournament.playerCount;
+      const cCountInput = document.getElementById('court-count');
+      if (cCountInput) cCountInput.value = tournament.courtCount;
+      const rCountInput = document.getElementById('total-rounds');
+      if (rCountInput) rCountInput.value = tournament.totalRounds;
+      const byeModeInput = document.getElementById('bye-scoring-mode');
+      if (byeModeInput) byeModeInput.value = tournament.byeScoringMode || 'player_avg';
+      const byePtsInput = document.getElementById('bye-points');
+      if (byePtsInput && tournament.byePoints !== undefined) byePtsInput.value = tournament.byePoints;
+
+      // Re-populate setup inputs so state is consistent if user returns to setup
+      const container = document.getElementById('player-inputs-container');
+      if (container) {
+        container.innerHTML = '';
+        tournament.players.forEach((p) => {
+          const div = document.createElement('div');
+          div.className = 'player-input-item';
+          div.innerHTML = `
+            <span class="player-number">#${p.id}</span>
+            <input type="text" id="setup-player-${p.id}" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Player ${p.id} Name" autocomplete="off">
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      // Recalculate all scores & stats
+      recalculateAllScores();
+
+      // Switch views to active scoring
+      document.getElementById('setup-view').style.display = 'none';
+      document.getElementById('scoring-view').style.display = 'block';
+
+      // Ensure header buttons are visible
+      const pdfBtn = document.getElementById('btn-export-rounds-pdf');
+      if (pdfBtn) pdfBtn.style.display = 'inline-flex';
+      const csvBtn = document.getElementById('btn-export-csv');
+      if (csvBtn) csvBtn.style.display = 'inline-flex';
+      const editBtn = document.getElementById('btn-edit-names');
+      if (editBtn) editBtn.style.display = 'inline-flex';
+      const pastBtn = document.getElementById('btn-past-scores');
+      if (pastBtn) pastBtn.style.display = 'inline-flex';
+      const resetBtn = document.getElementById('btn-reset-game');
+      if (resetBtn) resetBtn.style.display = 'inline-flex';
+
+      renderActiveRound();
+
+      const actionContainer = document.getElementById('round-action-container');
+      if (tournament.isCompleted) {
+        // Disable courtside inputs
+        if (tournament.currentRoundLayout && tournament.currentRoundLayout.courts) {
+          tournament.currentRoundLayout.courts.forEach((c, idx) => {
+            const inA = document.getElementById(`court-${idx}-scoreA`);
+            const inB = document.getElementById(`court-${idx}-scoreB`);
+            if (inA) inA.disabled = true;
+            if (inB) inB.disabled = true;
+          });
+        }
+
+        if (actionContainer) {
+          actionContainer.innerHTML = `
+            <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: var(--radius-md); padding: 16px 20px; width: 100%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-sm);">
+              <div>
+                <div style="font-family: 'Outfit', sans-serif; font-weight: 800; color: #065f46; font-size: 1.1rem;">
+                  🏆 Tournament Complete!
+                </div>
+                <div style="font-size: 0.85rem; color: #047857; margin-top: 2px;">
+                  All ${tournament.totalRounds} rounds finished. You can view standings or edit any past round scores.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-outline" onclick="exportTournamentCSV()">📥 Download CSV</button>
+                <button class="btn btn-outline" onclick="exportTournamentPDF()">📄 All Rounds PDF</button>
+                <button class="btn btn-outline" onclick="openPastScoresModal()">📋 Edit Past Scores</button>
+                <button class="btn btn-primary" onclick="openLeaderboardModal()">🏆 View Final Standings</button>
+              </div>
+            </div>
+          `;
+          actionContainer.style.display = 'flex';
+        }
+      }
+
+      saveTournamentToStorage();
+      updateTimerDisplay();
+      showToast(`✅ Tournament session restored from ${sourceDesc || 'CSV'} (Round ${tournament.currentRound} of ${tournament.totalRounds})`);
+    }
+
+    /* ==========================================================================
+       PDF EXPORT & SCORECARD GENERATION ENGINE
+       ========================================================================== */
+
+    function printReport(title, contentHtml) {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert("Please allow popup windows in your browser to view and print PDF documents.");
+        return;
+      }
+
+      const printDoc = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.4;
+      padding: 16px;
+    }
+    
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .doc-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .doc-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+    
+    .doc-meta {
+      font-size: 11px;
+      color: #334155;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .badge-primary { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .badge-king { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-bye { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+    
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 16px 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+      font-size: 11px;
+    }
+    
+    th {
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+    }
+    
+    td {
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    
+    .rank-cell {
+      font-weight: 800;
+      text-align: center;
+      width: 38px;
+    }
+    
+    .round-card {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: #ffffff;
+      page-break-inside: avoid;
+    }
+
+    .round-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .round-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    /* Scorecard Styles */
+    .scorecards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .scorecard {
+      border: 2px solid #0f172a;
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #ffffff;
+      page-break-inside: avoid;
+    }
+
+    .scorecard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px dashed #94a3b8;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .scorecard-matchup {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+    }
+
+    .scorecard-matchup td {
+      border: 1.5px solid #64748b;
+      padding: 8px;
+      vertical-align: middle;
+    }
+
+    .team-col {
+      width: 75%;
+    }
+
+    .team-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 3px;
+    }
+
+    .player-line {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .server-checkboxes {
+      display: inline-flex;
+      gap: 12px;
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    .score-col {
+      width: 25%;
+      text-align: center;
+    }
+
+    .score-box {
+      width: 80px;
+      height: 46px;
+      border: 2px solid #0f172a;
+      border-radius: 6px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      background: #f8fafc;
+    }
+
+    .scorecard-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+      margin-top: 4px;
+    }
+
+    .no-print-bar {
+      background: #0f172a;
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .btn-print {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    @media print {
+      .no-print-bar {
+        display: none !important;
+      }
+      body {
+        padding: 0;
+      }
+      .page-break {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+      .scorecard {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .round-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar">
+    <span>🏓 <strong>${title}</strong> — Printable Document</span>
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  ${contentHtml}
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 350);
+    };
+  <\/script>
+</body>
+</html>`;
+
+      printWindow.document.open();
+      printWindow.document.write(printDoc);
+      printWindow.document.close();
+    }
+
+    /* --- EXPORT ALL ROUNDS INFORMATION & SCORECARDS TOGETHER IN A SINGLE PDF --- */
+    function exportTournamentPDF() {
+      recalculateAllScores();
+
+      const totalRounds = tournament.totalRounds || parseInt(document.getElementById('total-rounds')?.value, 10) || 7;
+      const courtCount = tournament.courtCount || parseInt(document.getElementById('court-count')?.value, 10) || 3;
+      const pCount = tournament.playerCount || parseInt(document.getElementById('player-count')?.value, 10) || 14;
+
+      // Ensure players are available (even if called in Setup before starting)
+      let playersList = [...(tournament.players || [])];
+      if (playersList.length === 0) {
+        for (let i = 1; i <= pCount; i++) {
+          const input = document.getElementById(`setup-player-${i}`);
+          const name = (input && input.value.trim()) ? input.value.trim() : `Player ${i}`;
+          playersList.push({
+            id: i,
+            name: name,
+            activeScore: 0,
+            totalScore: 0,
+            roundsPlayed: 0,
+            byesReceived: 0,
+            avgScore: 0
+          });
+        }
+      }
+
+      const getPlayerInfo = (pid) => {
+        const found = playersList.find(x => x.id === pid);
+        return found || { id: pid, name: `Player ${pid}` };
+      };
+
+      const sorted = [...playersList].sort((a, b) => {
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        return a.id - b.id;
+      });
+
+      const dateStr = new Date().toLocaleString();
+      const byeRule = tournament.byeScoringMode === 'player_avg' 
+        ? "Player's Own Average (PPG)" 
+        : `Fixed (+${tournament.byePoints !== undefined ? tournament.byePoints : 7} pts)`;
+
+      // Ensure full schedule is available with autofilled players for all rounds from the start
+      let schedule = tournament.scheduledRounds;
+      if (!schedule || schedule.length < totalRounds) {
+        schedule = generateFullTournamentSchedule(playersList, courtCount, totalRounds, tournament.currentRoundLayout);
+        if (tournament.players && tournament.players.length > 0) {
+          tournament.scheduledRounds = schedule;
+        }
+      }
+
+      // Build complete rounds collection for ALL rounds from 1 to totalRounds
+      const allRoundsList = [];
+      for (let r = 1; r <= totalRounds; r++) {
+        if (r <= tournament.roundsData.length) {
+          allRoundsList.push({
+            roundNum: r,
+            status: 'completed',
+            statusLabel: 'Finished Results',
+            layout: tournament.roundsData[r - 1]
+          });
+        } else if (r === tournament.currentRound && !tournament.isCompleted && tournament.currentRoundLayout) {
+          allRoundsList.push({
+            roundNum: r,
+            status: 'active',
+            statusLabel: 'Active Round (In Progress)',
+            layout: tournament.currentRoundLayout
+          });
+        } else if (r === tournament.currentRound + 1 && tournament.pendingNextLayout) {
+          allRoundsList.push({
+            roundNum: r,
+            status: 'pending',
+            statusLabel: 'Next Round Set',
+            layout: tournament.pendingNextLayout
+          });
+        } else {
+          // Scheduled upcoming round — AUTOFILL PLAYERS FROM SCHEDULE!
+          const scheduledLayout = (schedule && schedule[r - 1]) 
+            ? schedule[r - 1] 
+            : {
+                roundNumber: r,
+                courts: [],
+                byes: []
+              };
+
+          allRoundsList.push({
+            roundNum: r,
+            status: 'upcoming',
+            statusLabel: `Scheduled Round ${r}`,
+            layout: scheduledLayout
+          });
+        }
+      }
+
+      let html = `
+        <!-- MASTER DOCUMENT HEADER -->
+        <div class="doc-header">
+          <div>
+            <div class="doc-title">👑 King of the Court Tournament Master Report</div>
+            <div class="doc-subtitle">Round-by-Round Scores Matrix & All ${totalRounds} Match Scorecards</div>
+          </div>
+          <div class="doc-meta">
+            <div><strong>Date:</strong> ${dateStr}</div>
+            <div><strong>Tournament Format:</strong> ${pCount} Players | ${courtCount} Courts | ${totalRounds} Total Rounds</div>
+            <div><strong>Bye Policy:</strong> ${byeRule}</div>
+          </div>
+        </div>
+
+        <!-- 1. ROUND-BY-ROUND SCORES MATRIX (ALL ROUNDS) -->
+        <div class="section-title">📊 1. Round-by-Round Player Scores Matrix (Rounds 1 to ${totalRounds})</div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 35px; text-align: center;">#</th>
+              <th>Player Name</th>
+      `;
+
+      for (let r = 1; r <= totalRounds; r++) {
+        html += `<th style="text-align: center; min-width: 55px;">R${r}</th>`;
+      }
+      html += `
+              <th style="text-align: right; width: 80px;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      sorted.forEach((p, idx) => {
+        html += `
+          <tr>
+            <td style="text-align: center; color: #64748b;">${idx + 1}</td>
+            <td><strong>${p.name}</strong></td>
+        `;
+
+        for (let r = 1; r <= totalRounds; r++) {
+          if (r <= tournament.roundsData.length) {
+            const rData = tournament.roundsData[r - 1];
+            let roundScore = 0;
+            let isBye = false;
+            let found = false;
+
+            rData.courts.forEach(c => {
+              if (c.teamA.includes(p.id)) {
+                roundScore = parseInt(c.scoreA, 10) || 0;
+                found = true;
+              } else if (c.teamB.includes(p.id)) {
+                roundScore = parseInt(c.scoreB, 10) || 0;
+                found = true;
+              }
+            });
+
+            if (!found && (rData.byes || []).includes(p.id)) {
+              roundScore = tournament.byeScoringMode === 'fixed' 
+                ? (tournament.byePoints !== undefined ? tournament.byePoints : 7)
+                : p.avgScore;
+              isBye = true;
+              found = true;
+            }
+
+            html += `<td style="text-align: center; font-weight: 700; ${isBye ? 'color: #b45309; background: #fefce8;' : ''}">${roundScore}${isBye ? ' (B)' : ''}</td>`;
+          } else if (r === tournament.currentRound && !tournament.isCompleted && tournament.currentRoundLayout) {
+            const curLayout = tournament.currentRoundLayout;
+            let liveScore = '';
+            let isBye = false;
+            curLayout.courts.forEach(c => {
+              if (c.teamA.includes(p.id)) {
+                liveScore = (c.scoreA !== undefined && c.scoreA !== '') ? c.scoreA : '';
+              } else if (c.teamB.includes(p.id)) {
+                liveScore = (c.scoreB !== undefined && c.scoreB !== '') ? c.scoreB : '';
+              }
+            });
+            if (liveScore === '' && (curLayout.byes || []).includes(p.id)) {
+              isBye = true;
+            }
+            if (isBye) {
+              html += `<td style="text-align: center; font-size: 11px; font-weight: 700; color: #b45309; background: #fefce8;">Bye</td>`;
+            } else {
+              html += `<td style="text-align: center; font-size: 11px; font-weight: 700; color: #0284c7;">${liveScore !== '' ? liveScore : '&nbsp;'}</td>`;
+            }
+          } else {
+            // Future upcoming scheduled round: specify Bye if resting, otherwise clean empty cell to add score manually
+            const rLayout = (schedule && schedule[r - 1]) ? schedule[r - 1] : null;
+            const isBye = rLayout && (rLayout.byes || []).includes(p.id);
+            if (isBye) {
+              html += `<td style="text-align: center; font-size: 11px; font-weight: 700; color: #b45309; background: #fefce8;">Bye</td>`;
+            } else {
+              html += `<td style="text-align: center; font-size: 11px; color: #cbd5e1;">&nbsp;</td>`;
+            }
+          }
+        }
+
+        html += `
+            <td style="text-align: right; font-weight: 800; color: #0284c7;">&nbsp;</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      // 2. COMPLETE SCORECARDS FOR ALL ROUNDS (ROUNDS 1 TO TOTALROUNDS)
+      html += `
+        <div class="page-break" style="page-break-before: always; break-before: page; margin-top: 24px;"></div>
+        <div class="section-title">📋 2. Official Printable Match Scorecards (All ${totalRounds} Rounds)</div>
+        <p style="font-size: 11px; color: #64748b; margin-bottom: 14px;">
+          Complete set of courtside match scorecards for all ${totalRounds} rounds. Print or export for official record keeping.
+        </p>
+        <div class="scorecards-container">
+      `;
+
+      allRoundsList.forEach((rObj, rIdx) => {
+        const layout = rObj.layout;
+        const rNum = rObj.roundNum;
+        const isFin = rObj.status === 'completed';
+        const byeNames = (layout.byes && layout.byes.length > 0) 
+          ? layout.byes.map(pid => getPlayerInfo(pid).name).join(', ') 
+          : 'None';
+
+        // Page break before each round in scorecards for clean printing
+        if (rIdx > 0) {
+          html += `<div class="page-break" style="page-break-before: always; break-before: page; margin-top: 18px;"></div>`;
+        }
+
+        html += `
+          <div style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; margin: 12px 0 8px 0; border-bottom: 1.5px solid #0f172a; padding-bottom: 4px;">
+            🏓 Round ${rNum} Official Match Scorecards — ${rObj.statusLabel}
+          </div>
+        `;
+
+        layout.courts.forEach((c, idx) => {
+          const hasTeams = c.teamA && c.teamA.length >= 2 && c.teamB && c.teamB.length >= 2;
+          const pA1 = hasTeams ? getPlayerInfo(c.teamA[0]).name : 'Player 1: __________________________';
+          const pA2 = hasTeams ? getPlayerInfo(c.teamA[1]).name : 'Player 2: __________________________';
+          const pB1 = hasTeams ? getPlayerInfo(c.teamB[0]).name : 'Player 1: __________________________';
+          const pB2 = hasTeams ? getPlayerInfo(c.teamB[1]).name : 'Player 2: __________________________';
+          const scoreA = (c.scoreA !== undefined && c.scoreA !== '') ? c.scoreA : '';
+          const scoreB = (c.scoreB !== undefined && c.scoreB !== '') ? c.scoreB : '';
+
+          html += `
+            <div class="scorecard">
+              <div class="scorecard-header">
+                <div>
+                  <span class="badge badge-primary">
+                    Court-${c.courtNum}
+                  </span>
+                  <strong style="font-family: 'Outfit', sans-serif; font-size: 14px; margin-left: 8px;">
+                    Round ${rNum} — Match ${idx + 1}
+                  </strong>
+                </div>
+                <div style="font-size: 11px; color: #64748b;">
+                  ${isFin ? '✅ Recorded Final Score' : (rObj.status === 'active' ? '⏱️ Active Round Match' : '📋 Official Match Sheet')}
+                </div>
+              </div>
+
+              <table class="scorecard-matchup">
+                <!-- TEAM A -->
+                <tr>
+                  <td class="team-col">
+                    <div class="team-title">Team A</div>
+                    <div class="player-line">${pA1}</div>
+                    <div class="player-line">${pA2}</div>
+                    <div class="server-checkboxes">
+                      <span>[ ] Server 1</span>
+                      <span>[ ] Server 2</span>
+                    </div>
+                  </td>
+                  <td class="score-col">
+                    <div class="team-title">Final Score</div>
+                    <div class="score-box">${scoreA}</div>
+                  </td>
+                </tr>
+
+                <!-- TEAM B -->
+                <tr>
+                  <td class="team-col">
+                    <div class="team-title">Team B</div>
+                    <div class="player-line">${pB1}</div>
+                    <div class="player-line">${pB2}</div>
+                    <div class="server-checkboxes">
+                      <span>[ ] Server 1</span>
+                      <span>[ ] Server 2</span>
+                    </div>
+                  </td>
+                  <td class="score-col">
+                    <div class="team-title">Final Score</div>
+                    <div class="score-box">${scoreB}</div>
+                  </td>
+                </tr>
+              </table>
+
+              <div class="scorecard-footer">
+                <div>🪑 <strong>Round ${rNum} Bench (Byes):</strong> ${byeNames}</div>
+                <div>Court Referee / Player Sign-off: _______________________</div>
+              </div>
+            </div>
+          `;
+        });
+      });
+
+      html += `</div>`;
+
+      printReport(`King of the Court Tournament - All ${totalRounds} Rounds Master PDF`, html);
+    }
+
+    /* --- EXPORT SCORECARDS PDF --- */
+    function exportScorecardPDF(roundFilter, courtIdxFilter) {
+      exportTournamentPDF();
+    }
+
+    /* --- EXPORT SINGLE GAME SCORECARD PDF --- */
+    function exportSingleGameScorecardPDF(roundNum, courtIdx) {
+      exportTournamentPDF();
     }
 
     /* ==========================================================================
