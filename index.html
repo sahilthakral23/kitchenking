@@ -568,6 +568,32 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .player-chip:hover {
+      border-color: var(--primary);
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+
+    .player-chip .p-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player-chip .edit-hint {
+      margin-left: auto;
+      font-size: 0.72rem;
+      opacity: 0.35;
+      transition: opacity 0.15s ease;
+    }
+
+    .player-chip:hover .edit-hint {
+      opacity: 1;
     }
 
     .player-chip .p-id {
@@ -577,6 +603,110 @@
       color: #475569;
       padding: 2px 5px;
       border-radius: 4px;
+    }
+
+    .player-select-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px 6px;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .player-select-wrapper:hover, .player-select-wrapper:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.12);
+      background: #f8fafc;
+    }
+
+    .player-slot-num {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-right: 6px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .player-match-select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 2px 0;
+      outline: none;
+      text-overflow: ellipsis;
+    }
+
+    .player-match-select option {
+      font-weight: 600;
+      color: #1e293b;
+      background: #ffffff;
+      padding: 6px;
+    }
+
+    .bye-select-wrapper {
+      display: inline-flex;
+      border-color: #fde047;
+      background: #fffbeb;
+      margin-right: 8px;
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .bye-select-wrapper:hover, .bye-select-wrapper:focus-within {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+      background: #fef3c7;
+    }
+
+    .bye-slot-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #b45309;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+
+    .past-match-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .past-match-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .past-match-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .past-match-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
     }
 
     .score-input-wrapper {
@@ -721,6 +851,15 @@
       font-weight: 700;
       color: #334155;
       box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .bye-player-chip:hover {
+      border-color: #f59e0b;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      background: #fffbeb;
     }
 
     /* MOVEMENT PREVIEW CARD (AFTER ROUND SUBMIT) */
@@ -1072,44 +1211,392 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* MOBILE ADJUSTMENTS */
-    @media (max-width: 640px) {
+    /* ==========================================================================
+       MOBILE APP UI STYLES (App Bar, Bottom Nav, Sheets, Pager, Touch Gestures)
+       ========================================================================== */
+
+    /* Desktop Hide Rule: Keep laptop/desktop UI 100% untouched */
+    @media (min-width: 769px) {
+      .mobile-app-bar,
+      .mobile-bottom-nav,
+      .mobile-court-pager,
+      .sheet-drag-handle {
+        display: none !important;
+      }
+    }
+
+    /* Mobile App Experience (<= 768px) */
+    @media (max-width: 768px) {
+      body {
+        background: #f1f5f9;
+        -webkit-tap-highlight-color: transparent;
+      }
+
       .app-container {
-        padding: 12px;
+        padding: 8px 10px 96px 10px;
+        max-width: 100%;
       }
 
-      header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 14px;
-        padding: 14px;
+      /* Hide Desktop Header on Mobile */
+      header.desktop-header {
+        display: none !important;
       }
 
-      .brand-group {
-        justify-content: center;
+      /* Sticky Mobile App Bar */
+      .mobile-app-bar {
+        position: sticky;
+        top: 0;
+        z-index: 850;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+        padding: 0 12px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+        margin: -8px -10px 12px -10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .mobile-back-btn {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        min-width: 72px;
+        min-height: 36px;
+        transition: all 0.15s ease;
+      }
+
+      .mobile-back-btn:active {
+        background: #e2e8f0;
+        transform: scale(0.95);
+      }
+
+      .mobile-back-btn .back-icon {
+        font-size: 1.15rem;
+        line-height: 1;
+        font-weight: 900;
+      }
+
+      .mobile-bar-center {
         text-align: center;
+        flex: 1;
+        padding: 0 8px;
+        overflow: hidden;
       }
 
-      .header-actions {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
+      .mobile-bar-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+      }
+
+      .mobile-bar-subtitle {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .mobile-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        font-size: 1.25rem;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .mobile-action-btn:active {
+        background: #e2e8f0;
+        transform: scale(0.92);
+      }
+
+      /* Mobile Court Pager Bar */
+      .mobile-court-pager {
+        display: flex;
+        align-items: center;
         gap: 8px;
-        width: 100%;
+        overflow-x: auto;
+        padding: 4px 2px 10px 2px;
+        margin-bottom: 6px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
       }
 
-      .header-actions .btn {
-        width: 100%;
-        padding: 8px 10px;
+      .mobile-court-pager::-webkit-scrollbar {
+        display: none;
+      }
+
+      .court-pager-pill {
+        flex: 1;
+        min-width: 90px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        font-family: 'Outfit', sans-serif;
         font-size: 0.82rem;
+        font-weight: 700;
+        color: #475569;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
       }
 
+      .court-pager-pill.active {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary-dark);
+        box-shadow: 0 3px 8px rgba(5, 150, 105, 0.28);
+        transform: scale(1.02);
+      }
+
+      /* Swipeable Courts Grid on Mobile */
+      .courts-grid {
+        display: flex !important;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 14px;
+        padding: 2px 2px 14px 2px;
+        margin: 0 -2px;
+        scrollbar-width: none;
+      }
+
+      .courts-grid::-webkit-scrollbar {
+        display: none;
+      }
+
+      .court-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border-radius: 16px;
+      }
+
+      /* Mobile App Bottom Navigation Bar */
+      .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 950;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top: 1px solid #e2e8f0;
+        padding-top: 6px;
+        padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+        box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.05);
+      }
+
+      .bottom-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 4px 0;
+        color: #64748b;
+        transition: all 0.15s ease;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .bottom-nav-item:active {
+        transform: scale(0.92);
+      }
+
+      .nav-icon-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bottom-nav-item .nav-icon {
+        font-size: 1.35rem;
+        line-height: 1;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .bottom-nav-item .nav-badge {
+        position: absolute;
+        top: -4px;
+        right: -10px;
+        background: #0284c7;
+        color: white;
+        font-size: 0.62rem;
+        font-weight: 800;
+        padding: 1px 4px;
+        border-radius: 99px;
+        line-height: 1.2;
+      }
+
+      .bottom-nav-item .nav-label {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        transition: color 0.15s ease;
+      }
+
+      .bottom-nav-item.active {
+        color: var(--primary);
+      }
+
+      .bottom-nav-item.active .nav-icon {
+        transform: scale(1.15) translateY(-2px);
+      }
+
+      .bottom-nav-item.active .nav-label {
+        color: var(--primary-dark);
+        font-weight: 800;
+      }
+
+      /* Mobile Bottom Sheet Transform for Modals */
+      .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+      }
+
+      .modal-dialog {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 88vh !important;
+        border-radius: 22px 22px 0 0 !important;
+        border-bottom: none !important;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.16) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
+      }
+
+      .modal-overlay.active .modal-dialog {
+        transform: translateY(0) !important;
+      }
+
+      .sheet-drag-handle {
+        width: 40px;
+        height: 5px;
+        background: #cbd5e1;
+        border-radius: 99px;
+        margin: 10px auto 4px auto;
+        cursor: grab;
+      }
+
+      /* Mobile More Menu Sheet Grid */
+      .mobile-menu-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mobile-menu-tile {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        width: 100%;
+        color: #0f172a;
+      }
+
+      .mobile-menu-tile:active {
+        background: #e2e8f0;
+        transform: scale(0.98);
+      }
+
+      .mobile-menu-tile.danger {
+        border-color: #fecaca;
+        background: #fff5f5;
+      }
+
+      .tile-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+      }
+
+      .tile-text {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .tile-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+
+      .tile-sub {
+        font-size: 0.74rem;
+        color: #64748b;
+        margin-top: 1px;
+      }
+
+      .tile-arrow {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        font-weight: 700;
+      }
+
+      /* Matchup layout improvements on mobile */
       .card {
-        padding: 16px;
+        border-radius: 16px;
+        padding: 14px;
       }
 
       .form-grid {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 12px;
       }
 
       .form-label {
@@ -1117,9 +1604,10 @@
       }
 
       .live-topbar {
+        border-radius: 14px;
+        padding: 12px;
+        gap: 10px;
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 14px;
       }
 
       .round-meta-group {
@@ -1129,11 +1617,6 @@
       .timer-widget {
         justify-content: space-between;
         width: 100%;
-      }
-
-      .courts-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
       }
 
       .matchup-container {
@@ -1146,6 +1629,22 @@
         gap: 8px;
       }
 
+      .score-btn {
+        width: 38px;
+        height: 42px;
+        font-size: 1.25rem;
+      }
+
+      .score-input {
+        height: 42px;
+        font-size: 1.25rem;
+      }
+
+      .player-match-select {
+        height: 38px;
+        font-size: 0.92rem;
+      }
+
       .podium-grid {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -1154,14 +1653,43 @@
       .podium-card.first {
         order: -1;
       }
+
+      /* Hide redundant round action export buttons on mobile since they are in bottom bar / menu */
+      #round-action-container .btn-outline {
+        display: none !important;
+      }
+
+      #round-action-container #btn-submit-round {
+        width: 100% !important;
+      }
+
+      footer {
+        padding-bottom: 20px;
+        margin-bottom: 60px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- APP HEADER -->
-    <header>
+    <!-- MOBILE APP BAR (Visible only on mobile <= 768px) -->
+    <div class="mobile-app-bar" id="mobile-app-bar">
+      <button type="button" class="mobile-back-btn" id="btn-mobile-back" onclick="handleMobileBack()" aria-label="Go Back" style="visibility: hidden;">
+        <span class="back-icon">‹</span>
+        <span class="back-text" id="mobile-back-text">Back</span>
+      </button>
+      <div class="mobile-bar-center">
+        <div class="mobile-bar-title" id="mobile-bar-title">King of the Court</div>
+        <div class="mobile-bar-subtitle" id="mobile-bar-subtitle">Tournament Setup</div>
+      </div>
+      <button type="button" class="mobile-action-btn" id="btn-mobile-more-trigger" onclick="openMobileMoreSheet()" aria-label="Menu Actions">
+        <span style="font-size: 1.25rem; line-height: 1;">⋯</span>
+      </button>
+    </div>
+
+    <!-- APP HEADER (Desktop) -->
+    <header class="desktop-header">
       <div class="brand-group">
         <div class="brand-icon">👑</div>
         <div>
@@ -1181,9 +1709,6 @@
         </button>
         <button class="btn btn-outline" id="btn-restore-csv" onclick="triggerImportCSV()" title="Restore Tournament Session from CSV File">
           📤 Restore Session (CSV)
-        </button>
-        <button class="btn btn-outline" id="btn-edit-names" onclick="openEditNamesModal()" style="display: none;">
-          ✏️ Edit Names
         </button>
         <button class="btn btn-outline" id="btn-past-scores" onclick="openPastScoresModal()" style="display: none;">
           📋 Past Scores
@@ -1341,6 +1866,9 @@
         </div>
       </div>
 
+      <!-- MOBILE COURT PAGER TABS (Visible only on mobile <= 768px) -->
+      <div class="mobile-court-pager" id="mobile-court-pager" style="display: none;"></div>
+
       <!-- ACTIVE COURTS GRID -->
       <div class="courts-grid" id="courts-container">
         <!-- Dynamically rendered court cards -->
@@ -1398,6 +1926,7 @@
   <!-- MODAL: LEADERBOARD -->
   <div class="modal-overlay" id="modal-leaderboard">
     <div class="modal-dialog">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
         <h3 class="modal-title">🏆 Tournament Standings</h3>
         <button class="modal-close" onclick="closeLeaderboardModal()">&times;</button>
@@ -1405,6 +1934,21 @@
       <div class="modal-body">
         <div class="podium-grid" id="podium-container">
           <!-- Top 3 podium items -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+          <span style="font-size: 0.82rem; color: var(--text-muted);">
+            💡 <strong>Fair Bye Scoring:</strong> Avg (PPG) = points procured divided by games played.
+          </span>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #64748b;">Rank by:</span>
+            <button type="button" id="btn-sort-ppg" class="btn btn-primary btn-sm" onclick="setLeaderboardSort('ppg')" style="padding: 3px 10px; font-size: 0.78rem;">
+              🎯 PPG Average
+            </button>
+            <button type="button" id="btn-sort-total" class="btn btn-outline btn-sm" onclick="setLeaderboardSort('total')" style="padding: 3px 10px; font-size: 0.78rem;">
+              📊 Total Points
+            </button>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -1415,8 +1959,8 @@
                 <th>Player</th>
                 <th style="text-align: center;">Games</th>
                 <th style="text-align: center;">Byes</th>
-                <th style="text-align: center;">Avg (PPG)</th>
-                <th style="text-align: right;">Total Points</th>
+                <th style="text-align: center;" title="Actual points procured divided by games played">Avg (PPG)</th>
+                <th style="text-align: right;" title="Actual total points scored across matches">Total Points</th>
               </tr>
             </thead>
             <tbody id="leaderboard-table-body">
@@ -1439,41 +1983,11 @@
     </div>
   </div>
 
-  <!-- MODAL: EDIT PLAYER NAMES -->
-  <div class="modal-overlay" id="modal-edit-names">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 class="modal-title">✏️ Edit Player Names</h3>
-        <button class="modal-close" onclick="closeEditNamesModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
-            Update player names or add new players to the tournament.
-          </p>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addNewPlayerToEditModal()">
-            ➕ Add New Player
-          </button>
-        </div>
-        <div class="player-inputs-grid" id="edit-names-container">
-          <!-- Dynamically filled -->
-        </div>
-      </div>
-      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <button type="button" class="btn btn-outline btn-sm" onclick="addNewPlayerToEditModal()">
-          ➕ Add New Player
-        </button>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-secondary" onclick="closeEditNamesModal()">Cancel</button>
-          <button class="btn btn-primary" onclick="saveEditedPlayerNames()">Save Changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL: EDIT PAST ROUND SCORES -->
   <div class="modal-overlay" id="modal-past-scores">
     <div class="modal-dialog">
+      <div class="sheet-drag-handle"></div>
       <div class="modal-header">
         <h3 class="modal-title">📋 View & Edit Past Round Scores</h3>
         <button class="modal-close" onclick="closePastScoresModal()">&times;</button>
@@ -1497,6 +2011,100 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL: MOBILE MORE ACTIONS BOTTOM SHEET -->
+  <div class="modal-overlay" id="modal-mobile-more">
+    <div class="modal-dialog mobile-sheet-dialog">
+      <div class="sheet-drag-handle"></div>
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ Tournament Menu</h3>
+        <button type="button" class="modal-close" onclick="closeMobileMoreSheet()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 14px 16px;">
+        <div class="mobile-menu-grid">
+          <button type="button" class="mobile-menu-tile" onclick="closeMobileMoreSheet(); exportTournamentPDF();">
+            <div class="tile-icon" style="background: #e0f2fe; color: #0284c7;">📄</div>
+            <div class="tile-text">
+              <div class="tile-title">Print Master PDF</div>
+              <div class="tile-sub">All rounds score matrix & printable scorecards</div>
+            </div>
+            <span class="tile-arrow">›</span>
+          </button>
+
+          <button type="button" class="mobile-menu-tile" onclick="closeMobileMoreSheet(); exportTournamentCSV();">
+            <div class="tile-icon" style="background: #dcfce7; color: #16a34a;">📥</div>
+            <div class="tile-text">
+              <div class="tile-title">Export CSV Data</div>
+              <div class="tile-sub">Download tournament standings & scores</div>
+            </div>
+            <span class="tile-arrow">›</span>
+          </button>
+
+          <button type="button" class="mobile-menu-tile" onclick="closeMobileMoreSheet(); triggerImportCSV();">
+            <div class="tile-icon" style="background: #fef3c7; color: #d97706;">📤</div>
+            <div class="tile-text">
+              <div class="tile-title">Restore Session (CSV)</div>
+              <div class="tile-sub">Resume a previously exported session file</div>
+            </div>
+            <span class="tile-arrow">›</span>
+          </button>
+
+          <button type="button" class="mobile-menu-tile" id="mobile-menu-timer-tile" onclick="toggleTimerFromMobileMenu();">
+            <div class="tile-icon" style="background: #f3e8ff; color: #9333ea;">⏱️</div>
+            <div class="tile-text">
+              <div class="tile-title" id="mobile-menu-timer-title">Match Timer (<span id="mobile-menu-timer-val">12:00</span>)</div>
+              <div class="tile-sub" id="mobile-menu-timer-status">Tap to start/pause countdown timer</div>
+            </div>
+            <span class="tile-arrow" id="mobile-menu-timer-action">▶</span>
+          </button>
+
+          <button type="button" class="mobile-menu-tile danger" id="mobile-menu-reset-tile" onclick="closeMobileMoreSheet(); confirmResetTournament();" style="display: none;">
+            <div class="tile-icon" style="background: #fee2e2; color: #dc2626;">🔄</div>
+            <div class="tile-text">
+              <div class="tile-title" style="color: #dc2626;">Start New Game</div>
+              <div class="tile-sub">Reset current tournament and return to setup</div>
+            </div>
+            <span class="tile-arrow">›</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: center; padding: 10px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeMobileMoreSheet()" style="width: 100%;">Close Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION (Visible only on mobile <= 768px) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button type="button" class="bottom-nav-item active" id="tab-nav-matches" onclick="switchMobileTab('matches')">
+      <div class="nav-icon-wrapper">
+        <span class="nav-icon">🎾</span>
+        <span class="nav-badge" id="mobile-round-badge" style="display: none;">R1</span>
+      </div>
+      <span class="nav-label" id="tab-nav-matches-label">Matches</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="tab-nav-standings" onclick="switchMobileTab('standings')">
+      <div class="nav-icon-wrapper">
+        <span class="nav-icon">🏆</span>
+      </div>
+      <span class="nav-label">Standings</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="tab-nav-scores" onclick="switchMobileTab('scores')">
+      <div class="nav-icon-wrapper">
+        <span class="nav-icon">📋</span>
+      </div>
+      <span class="nav-label">Scores</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="tab-nav-more" onclick="switchMobileTab('more')">
+      <div class="nav-icon-wrapper">
+        <span class="nav-icon">⚙️</span>
+      </div>
+      <span class="nav-label">More</span>
+    </button>
+  </nav>
 
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toast-container"></div>
@@ -1596,8 +2204,6 @@
         if (pdfBtn) pdfBtn.style.display = 'inline-flex';
         const csvBtn = document.getElementById('btn-export-csv');
         if (csvBtn) csvBtn.style.display = 'inline-flex';
-        const editBtn = document.getElementById('btn-edit-names');
-        if (editBtn) editBtn.style.display = 'inline-flex';
         const pastBtn = document.getElementById('btn-past-scores');
         if (pastBtn) pastBtn.style.display = 'inline-flex';
         const resetBtn = document.getElementById('btn-reset-game');
@@ -1658,6 +2264,10 @@
         renderSetupPlayerInputs(14);
         updateSetupRoundCalculation();
       }
+      initCourtSwipeListener();
+      initBottomSheetDrag();
+      initViewSwipeGestures();
+      updateMobileChrome();
     });
 
     /* ==========================================================================
@@ -1902,8 +2512,6 @@
       if (pdfBtn) pdfBtn.style.display = 'inline-flex';
       const csvBtn = document.getElementById('btn-export-csv');
       if (csvBtn) csvBtn.style.display = 'inline-flex';
-      const editBtn = document.getElementById('btn-edit-names');
-      if (editBtn) editBtn.style.display = 'inline-flex';
       const pastBtn = document.getElementById('btn-past-scores');
       if (pastBtn) pastBtn.style.display = 'inline-flex';
       const resetBtn = document.getElementById('btn-reset-game');
@@ -2126,10 +2734,167 @@
        ACTIVE ROUND SCORING UI
        ========================================================================== */
 
+    function saveCurrentActiveScoresFromDOM() {
+      if (!tournament.currentRoundLayout || !tournament.currentRoundLayout.courts) return;
+      tournament.currentRoundLayout.courts.forEach((c, idx) => {
+        const inA = document.getElementById(`court-${idx}-scoreA`);
+        const inB = document.getElementById(`court-${idx}-scoreB`);
+        if (inA && inA.value !== '') c.scoreA = parseInt(inA.value, 10);
+        if (inB && inB.value !== '') c.scoreB = parseInt(inB.value, 10);
+      });
+    }
+
+    function renderPlayerSelectOptions(currentPid) {
+      const layout = tournament.currentRoundLayout;
+      if (!layout) return '';
+      return tournament.players.map(p => {
+        let loc = '';
+        if (p.id === currentPid) {
+          loc = ' (Current)';
+        } else if (layout.byes && layout.byes.includes(p.id)) {
+          loc = ' (Resting on Bench)';
+        } else if (layout.courts) {
+          for (let c = 0; c < layout.courts.length; c++) {
+            const curC = layout.courts[c];
+            if (curC.teamA && curC.teamA.includes(p.id)) {
+              loc = ` (${curC.courtName} Team A)`;
+              break;
+            }
+            if (curC.teamB && curC.teamB.includes(p.id)) {
+              loc = ` (${curC.courtName} Team B)`;
+              break;
+            }
+          }
+        }
+        const isSelected = p.id === currentPid ? 'selected' : '';
+        const safeName = p.name ? p.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : `Player ${p.id}`;
+        return `<option value="${p.id}" ${isSelected}>${safeName}${loc}</option>`;
+      }).join('');
+    }
+
+    function changeActiveRoundPlayer(courtIdx, team, slotIdx, newPidStr) {
+      if (tournament.isCompleted || !tournament.currentRoundLayout) return;
+      const newPid = parseInt(newPidStr, 10);
+      if (isNaN(newPid)) return;
+
+      saveCurrentActiveScoresFromDOM();
+      const layout = tournament.currentRoundLayout;
+      const court = layout.courts[courtIdx];
+      if (!court) return;
+      const oldPid = (team === 'A') ? court.teamA[slotIdx] : court.teamB[slotIdx];
+      if (oldPid === newPid) return;
+
+      const oldPlayer = getPlayer(oldPid);
+      const newPlayer = getPlayer(newPid);
+
+      // Check if newPid is currently on the bye bench (substitute resting player)
+      const byeIdx = (layout.byes || []).indexOf(newPid);
+      if (byeIdx !== -1) {
+        layout.byes[byeIdx] = oldPid;
+        if (team === 'A') court.teamA[slotIdx] = newPid;
+        else court.teamB[slotIdx] = newPid;
+        saveTournamentToStorage();
+        renderActiveRound();
+        showToast(`🔁 ${newPlayer ? newPlayer.name : 'Player'} is now playing on ${court.courtName}. ${oldPlayer ? oldPlayer.name : 'Player'} is resting on the Bye Bench.`);
+        return;
+      }
+
+      // Check if newPid is on another court or slot (swap positions)
+      for (let c = 0; c < layout.courts.length; c++) {
+        const curC = layout.courts[c];
+        for (let s = 0; s < curC.teamA.length; s++) {
+          if (curC.teamA[s] === newPid) {
+            curC.teamA[s] = oldPid;
+            if (team === 'A') court.teamA[slotIdx] = newPid;
+            else court.teamB[slotIdx] = newPid;
+            saveTournamentToStorage();
+            renderActiveRound();
+            showToast(`🔁 Swapped ${newPlayer ? newPlayer.name : 'Player'} and ${oldPlayer ? oldPlayer.name : 'Player'}`);
+            return;
+          }
+        }
+        for (let s = 0; s < curC.teamB.length; s++) {
+          if (curC.teamB[s] === newPid) {
+            curC.teamB[s] = oldPid;
+            if (team === 'A') court.teamA[slotIdx] = newPid;
+            else court.teamB[slotIdx] = newPid;
+            saveTournamentToStorage();
+            renderActiveRound();
+            showToast(`🔁 Swapped ${newPlayer ? newPlayer.name : 'Player'} and ${oldPlayer ? oldPlayer.name : 'Player'}`);
+            return;
+          }
+        }
+      }
+    }
+
+    function changeActiveRoundByePlayer(byeIdx, newPidStr) {
+      if (tournament.isCompleted || !tournament.currentRoundLayout) return;
+      const newPid = parseInt(newPidStr, 10);
+      if (isNaN(newPid)) return;
+
+      saveCurrentActiveScoresFromDOM();
+      const layout = tournament.currentRoundLayout;
+      const oldPid = layout.byes[byeIdx];
+      if (oldPid === newPid) return;
+
+      const oldPlayer = getPlayer(oldPid);
+      const newPlayer = getPlayer(newPid);
+
+      // If newPid is elsewhere on the bye bench, swap them
+      const otherByeIdx = (layout.byes || []).indexOf(newPid);
+      if (otherByeIdx !== -1) {
+        layout.byes[byeIdx] = newPid;
+        layout.byes[otherByeIdx] = oldPid;
+      } else {
+        // newPid is currently on a court
+        let found = false;
+        for (let c = 0; c < layout.courts.length; c++) {
+          const curC = layout.courts[c];
+          for (let s = 0; s < curC.teamA.length; s++) {
+            if (curC.teamA[s] === newPid) {
+              curC.teamA[s] = oldPid;
+              layout.byes[byeIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+          for (let s = 0; s < curC.teamB.length; s++) {
+            if (curC.teamB[s] === newPid) {
+              curC.teamB[s] = oldPid;
+              layout.byes[byeIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
+      }
+
+      saveTournamentToStorage();
+      renderActiveRound();
+      showToast(`🔁 ${newPlayer ? newPlayer.name : 'Player'} is now resting on the Bye Bench. ${oldPlayer ? oldPlayer.name : 'Player'} is playing in their place.`);
+    }
+
+    function swapActiveRoundPartners(courtIdx) {
+      if (tournament.isCompleted || !tournament.currentRoundLayout) return;
+      saveCurrentActiveScoresFromDOM();
+      const court = tournament.currentRoundLayout.courts[courtIdx];
+      if (!court || court.teamA.length < 2 || court.teamB.length < 2) return;
+      // Swap partner pairs on this court: Team A: [p0, p2], Team B: [p1, p3]
+      const [p0, p1] = court.teamA;
+      const [p2, p3] = court.teamB;
+      court.teamA = [p0, p2];
+      court.teamB = [p1, p3];
+      saveTournamentToStorage();
+      renderActiveRound();
+      showToast(`⇄ Swapped partner pairs on ${court.courtName}`);
+    }
+
     function renderActiveRound() {
       const layout = tournament.currentRoundLayout;
       const rNum = tournament.currentRound;
-      const ptsLabel = tournament.byeScoringMode === 'player_avg' ? "Player's Avg PPG" : `+${tournament.byePoints} pts`;
+      const ptsLabel = tournament.byeScoringMode === 'player_avg' ? "PPG Avg" : `+${tournament.byePoints} pts`;
 
       // Badges
       document.getElementById('current-round-badge').innerText = `Round ${rNum} of ${tournament.totalRounds}`;
@@ -2141,18 +2906,17 @@
       let html = '';
 
       layout.courts.forEach((c, idx) => {
-        const pA1 = getPlayer(c.teamA[0]);
-        const pA2 = getPlayer(c.teamA[1]);
-        const pB1 = getPlayer(c.teamB[0]);
-        const pB2 = getPlayer(c.teamB[1]);
-
         html += `
           <div class="court-card ${c.isKingCourt ? 'king-court' : ''}">
             <div class="court-header">
               <div class="court-title-group">
-                <span class="court-title">${c.isKingCourt ? '👑 ' : '🏸 '}${c.courtName}</span>
+                <span class="court-title">${c.courtName}</span>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="swap-btn" style="padding: 3px 8px; font-size: 0.72rem; font-weight: 700;" 
+                        onclick="swapActiveRoundPartners(${idx})" title="Swap partner combinations on this court before ending round">
+                  ⇄ Swap Partners
+                </button>
                 <button type="button" class="btn btn-outline btn-sm" style="padding: 3px 8px; font-size: 0.72rem; font-weight: 700; background: #ffffff;" 
                         onclick="exportSingleGameScorecardPDF(${rNum}, ${idx})" title="Print or Save Scorecard PDF for this Game">
                   📄 Scorecard PDF
@@ -2170,13 +2934,17 @@
                   <span>Team A</span>
                   <button type="button" class="score-quick-11" onclick="quickSetScore(${idx}, 'A', 11)">Set 11</button>
                 </div>
-                <div class="player-chip">
-                  <span class="p-id">#${pA1.id}</span>
-                  <span>${pA1.name}</span>
+                <div class="player-select-wrapper">
+                  <span class="player-slot-num">A1</span>
+                  <select class="player-match-select" onchange="changeActiveRoundPlayer(${idx}, 'A', 0, this.value)" title="Select player for Court-${c.courtNum} Team A Slot 1" ${tournament.isCompleted ? 'disabled' : ''}>
+                    ${renderPlayerSelectOptions(c.teamA[0])}
+                  </select>
                 </div>
-                <div class="player-chip">
-                  <span class="p-id">#${pA2.id}</span>
-                  <span>${pA2.name}</span>
+                <div class="player-select-wrapper">
+                  <span class="player-slot-num">A2</span>
+                  <select class="player-match-select" onchange="changeActiveRoundPlayer(${idx}, 'A', 1, this.value)" title="Select player for Court-${c.courtNum} Team A Slot 2" ${tournament.isCompleted ? 'disabled' : ''}>
+                    ${renderPlayerSelectOptions(c.teamA[1])}
+                  </select>
                 </div>
                 <div class="score-input-wrapper">
                   <button type="button" class="score-btn" onclick="stepScore(${idx}, 'A', -1)">−</button>
@@ -2198,13 +2966,17 @@
                   <span>Team B</span>
                   <button type="button" class="score-quick-11" onclick="quickSetScore(${idx}, 'B', 11)">Set 11</button>
                 </div>
-                <div class="player-chip">
-                  <span class="p-id">#${pB1.id}</span>
-                  <span>${pB1.name}</span>
+                <div class="player-select-wrapper">
+                  <span class="player-slot-num">B1</span>
+                  <select class="player-match-select" onchange="changeActiveRoundPlayer(${idx}, 'B', 0, this.value)" title="Select player for Court-${c.courtNum} Team B Slot 1" ${tournament.isCompleted ? 'disabled' : ''}>
+                    ${renderPlayerSelectOptions(c.teamB[0])}
+                  </select>
                 </div>
-                <div class="player-chip">
-                  <span class="p-id">#${pB2.id}</span>
-                  <span>${pB2.name}</span>
+                <div class="player-select-wrapper">
+                  <span class="player-slot-num">B2</span>
+                  <select class="player-match-select" onchange="changeActiveRoundPlayer(${idx}, 'B', 1, this.value)" title="Select player for Court-${c.courtNum} Team B Slot 2" ${tournament.isCompleted ? 'disabled' : ''}>
+                    ${renderPlayerSelectOptions(c.teamB[1])}
+                  </select>
                 </div>
                 <div class="score-input-wrapper">
                   <button type="button" class="score-btn" onclick="stepScore(${idx}, 'B', -1)">−</button>
@@ -2226,7 +2998,7 @@
       const byeLabel = document.getElementById('bye-pts-label');
       if (byeLabel) {
         byeLabel.innerText = tournament.byeScoringMode === 'player_avg'
-          ? "✨ Awarded: Player's Own Scoring Avg (PPG)"
+          ? "✨ Points Procured Averaged by Games Played (PPG)"
           : (tournament.byePoints > 0 ? `+${tournament.byePoints} Pts Awarded Automatically` : `0 Pts (Resting Round)`);
       }
 
@@ -2235,12 +3007,13 @@
       } else {
         document.getElementById('bye-bench-card').style.display = 'block';
         let byeHtml = '';
-        layout.byes.forEach(pid => {
-          const p = getPlayer(pid);
+        layout.byes.forEach((pid, byeIdx) => {
           byeHtml += `
-            <div class="bye-player-chip">
-              <span class="player-id-badge">#${p.id}</span>
-              <span>${p.name}</span>
+            <div class="player-select-wrapper bye-select-wrapper">
+              <span class="bye-slot-badge">🪑 Rest #${byeIdx + 1}</span>
+              <select class="player-match-select" onchange="changeActiveRoundByePlayer(${byeIdx}, this.value)" title="Choose resting player for this bye slot" ${tournament.isCompleted ? 'disabled' : ''}>
+                ${renderPlayerSelectOptions(pid)}
+              </select>
             </div>
           `;
         });
@@ -2264,6 +3037,12 @@
         }
 
         document.getElementById('round-action-container').innerHTML = `
+          <button type="button" class="btn btn-outline btn-lg" onclick="exportTournamentCSV()" title="Export Tournament Standings & Match Scores as CSV">
+            📥 Export CSV
+          </button>
+          <button type="button" class="btn btn-outline btn-lg" onclick="exportTournamentPDF()" title="Print All Rounds PDF">
+            📄 Print All Rounds PDF
+          </button>
           ${reshuffleBtn}
           <button class="btn btn-primary btn-lg" id="btn-submit-round" onclick="submitRoundScores()">
             ${actionBtnText}
@@ -2271,6 +3050,8 @@
         `;
         document.getElementById('round-action-container').style.display = 'flex';
       }
+      renderMobileCourtPager();
+      updateMobileChrome();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -2595,7 +3376,7 @@
           <div class="movement-row">
             <div class="movement-row-header">
               <span style="color: ${c.isKingCourt ? '#d97706' : '#334155'}; font-weight: 800;">
-                ${c.isKingCourt ? '👑 ' : '🏸 '}${c.courtName}
+                ${c.courtName}
               </span>
               <button type="button" class="swap-btn" onclick="swapNextRoundPartners(${idx})">
                 ⇄ Swap Partners
@@ -2605,14 +3386,14 @@
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
               <div class="partner-pair">
                 <span>Team A:</span>
-                <span style="color: var(--primary-dark);">#${pA1.id} ${pA1.name}</span> + 
-                <span style="color: var(--primary-dark);">#${pA2.id} ${pA2.name}</span>
+                <span style="color: var(--primary-dark);">${pA1.name}</span> + 
+                <span style="color: var(--primary-dark);">${pA2.name}</span>
               </div>
               <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8;">VS</span>
               <div class="partner-pair">
                 <span>Team B:</span>
-                <span style="color: var(--primary-dark);">#${pB1.id} ${pB1.name}</span> + 
-                <span style="color: var(--primary-dark);">#${pB2.id} ${pB2.name}</span>
+                <span style="color: var(--primary-dark);">${pB1.name}</span> + 
+                <span style="color: var(--primary-dark);">${pB2.name}</span>
               </div>
             </div>
           </div>
@@ -2622,7 +3403,7 @@
       if (nextLayout.byes.length > 0) {
         let byeNames = nextLayout.byes.map(pid => {
           const p = getPlayer(pid);
-          return `#${p.id} ${p.name}`;
+          return p ? p.name : 'Player';
         }).join(', ');
 
         html += `
@@ -2713,24 +3494,18 @@
         });
       });
 
-      // 3. Calculate each player's average points per game (PPG)
+      // 3. Calculate each player's average points per game (PPG) = points procured in rounds played / number of games played
       tournament.players.forEach(p => {
-        p.avgScore = p.roundsPlayed > 0 ? parseFloat((p.activeScore / p.roundsPlayed).toFixed(2)) : 7.0;
+        p.avgScore = p.roundsPlayed > 0 ? parseFloat((p.activeScore / p.roundsPlayed).toFixed(2)) : 0.0;
       });
 
-      // 4. Calculate total score including fair bye points
+      // 4. Calculate total score: actual points procured across matches (no artificial bye points in player_avg mode)
       tournament.players.forEach(p => {
-        if (p.byesReceived === 0) {
+        if (p.byesReceived === 0 || tournament.byeScoringMode === 'player_avg') {
           p.totalScore = p.activeScore;
         } else {
-          if (tournament.byeScoringMode === 'fixed') {
-            const fixedPts = tournament.byePoints !== undefined ? tournament.byePoints : 7;
-            p.totalScore = p.activeScore + (p.byesReceived * fixedPts);
-          } else {
-            // Player's Own Rolling Average (PPG)
-            const byePts = p.byesReceived * p.avgScore;
-            p.totalScore = parseFloat((p.activeScore + byePts).toFixed(1));
-          }
+          const fixedPts = tournament.byePoints !== undefined ? tournament.byePoints : 7;
+          p.totalScore = p.activeScore + (p.byesReceived * fixedPts);
         }
       });
     }
@@ -2743,34 +3518,70 @@
        MODALS: LEADERBOARD, EDIT NAMES, PAST SCORES
        ========================================================================== */
 
-    function openLeaderboardModal() {
-      recalculateAllScores();
+    let leaderboardSortMode = 'ppg'; // 'ppg' or 'total'
 
-      // Sort players by total score descending (tie-breaker by avgScore)
+    function setLeaderboardSort(mode) {
+      leaderboardSortMode = mode;
+      const btnPPG = document.getElementById('btn-sort-ppg');
+      const btnTotal = document.getElementById('btn-sort-total');
+      if (btnPPG && btnTotal) {
+        if (mode === 'ppg') {
+          btnPPG.className = 'btn btn-primary btn-sm';
+          btnTotal.className = 'btn btn-outline btn-sm';
+        } else {
+          btnPPG.className = 'btn btn-outline btn-sm';
+          btnTotal.className = 'btn btn-primary btn-sm';
+        }
+      }
+      renderLeaderboardContent();
+    }
+
+    function openLeaderboardModal(pushHistory = true) {
+      recalculateAllScores();
+      renderLeaderboardContent();
+      document.getElementById('modal-leaderboard').classList.add('active');
+      if (pushHistory && window.innerWidth <= 768) {
+        history.pushState({ modal: 'leaderboard' }, '');
+      }
+      updateMobileChrome();
+      updateMobileNavActive('standings');
+    }
+
+    function renderLeaderboardContent() {
+      // Sort players: in PPG mode, rank by points procured averaged by games played
       const sorted = [...tournament.players].sort((a, b) => {
-        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-        if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        if (leaderboardSortMode === 'ppg') {
+          if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+          if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        } else {
+          if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+          if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        }
         return a.id - b.id;
       });
 
       // Podium Top 3
       const podium = document.getElementById('podium-container');
       if (sorted.length >= 3) {
+        const getScoreLabel = (p) => leaderboardSortMode === 'ppg' ? `${p.avgScore.toFixed(1)} PPG` : `${p.totalScore} pts`;
         podium.innerHTML = `
           <div class="podium-card second">
             <div class="podium-crown">🥈</div>
-            <div class="podium-name">#${sorted[1].id} ${sorted[1].name}</div>
-            <div class="podium-score">${sorted[1].totalScore} pts</div>
+            <div class="podium-name">${sorted[1].name}</div>
+            <div class="podium-score">${getScoreLabel(sorted[1])}</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[1].totalScore} pts | ${sorted[1].roundsPlayed} games</div>
           </div>
           <div class="podium-card first">
             <div class="podium-crown">👑</div>
-            <div class="podium-name">#${sorted[0].id} ${sorted[0].name}</div>
-            <div class="podium-score">${sorted[0].totalScore} pts</div>
+            <div class="podium-name">${sorted[0].name}</div>
+            <div class="podium-score">${getScoreLabel(sorted[0])}</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[0].totalScore} pts | ${sorted[0].roundsPlayed} games</div>
           </div>
           <div class="podium-card third">
             <div class="podium-crown">🥉</div>
-            <div class="podium-name">#${sorted[2].id} ${sorted[2].name}</div>
-            <div class="podium-score">${sorted[2].totalScore} pts</div>
+            <div class="podium-name">${sorted[2].name}</div>
+            <div class="podium-score">${getScoreLabel(sorted[2])}</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[2].totalScore} pts | ${sorted[2].roundsPlayed} games</div>
           </div>
         `;
         podium.style.display = 'grid';
@@ -2787,10 +3598,10 @@
         html += `
           <tr>
             <td><span class="rank-pill ${rankClass}">${rank}</span></td>
-            <td><strong>#${p.id} ${p.name}</strong></td>
+            <td><strong>${p.name}</strong></td>
             <td style="text-align: center;">${p.roundsPlayed}</td>
             <td style="text-align: center;">${p.byesReceived}</td>
-            <td style="text-align: center; font-weight: 700; color: #047857;">${p.avgScore.toFixed(1)}</td>
+            <td style="text-align: center; font-weight: 800; color: #047857; font-size: 1.05rem;">${p.avgScore.toFixed(1)}</td>
             <td style="text-align: right; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--primary-dark);">
               ${p.totalScore}
             </td>
@@ -2798,153 +3609,273 @@
         `;
       });
       tbody.innerHTML = html;
-
-      document.getElementById('modal-leaderboard').classList.add('active');
     }
 
     function closeLeaderboardModal() {
-      document.getElementById('modal-leaderboard').classList.remove('active');
+      const el = document.getElementById('modal-leaderboard');
+      if (el) el.classList.remove('active');
+      updateMobileChrome();
+      updateMobileNavActive('matches');
     }
 
-    let editModalPlayerCount = 0;
 
-    function openEditNamesModal() {
-      const container = document.getElementById('edit-names-container');
-      editModalPlayerCount = tournament.players.length;
-      let html = '';
-      tournament.players.forEach(p => {
-        html += `
-          <div class="player-input-card" id="edit-card-${p.id}">
-            <span class="player-id-badge">#${p.id}</span>
-            <input type="text" class="player-name-input" id="edit-player-${p.id}" value="${p.name}" placeholder="Player name">
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-      document.getElementById('modal-edit-names').classList.add('active');
-    }
-
-    function addNewPlayerToEditModal() {
-      editModalPlayerCount++;
-      const nextId = editModalPlayerCount;
-      const container = document.getElementById('edit-names-container');
-      const div = document.createElement('div');
-      div.className = 'player-input-card';
-      div.id = `edit-card-${nextId}`;
-      div.style.border = '2px dashed var(--primary)';
-      div.innerHTML = `
-        <span class="player-id-badge" style="background: var(--primary); color: white;">#${nextId}</span>
-        <input type="text" class="player-name-input" id="edit-player-${nextId}" value="Player ${nextId}" placeholder="Enter new player name" style="font-weight: 700;">
-      `;
-      container.appendChild(div);
-      div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      const inEl = document.getElementById(`edit-player-${nextId}`);
-      if (inEl) {
-        inEl.focus();
-        inEl.select();
-      }
-      showToast(`Added input for Player #${nextId}`);
-    }
-
-    function closeEditNamesModal() {
-      document.getElementById('modal-edit-names').classList.remove('active');
-    }
-
-    function saveEditedPlayerNames() {
-      // 1. Update existing players
-      tournament.players.forEach(p => {
-        const input = document.getElementById(`edit-player-${p.id}`);
-        if (input && input.value.trim()) {
-          p.name = input.value.trim();
+    function renderPastRoundPlayerSelectOptions(roundObj, currentPid) {
+      if (!roundObj) return '';
+      return tournament.players.map(p => {
+        let loc = '';
+        if (p.id === currentPid) {
+          loc = ' (Current)';
+        } else if (roundObj.byes && roundObj.byes.includes(p.id)) {
+          loc = ' (Resting on Bench)';
+        } else if (roundObj.courts) {
+          for (let c = 0; c < roundObj.courts.length; c++) {
+            const curC = roundObj.courts[c];
+            if (curC.teamA && curC.teamA.includes(p.id)) {
+              loc = ` (${curC.courtName} Team A)`;
+              break;
+            }
+            if (curC.teamB && curC.teamB.includes(p.id)) {
+              loc = ` (${curC.courtName} Team B)`;
+              break;
+            }
+          }
         }
-      });
+        const isSelected = p.id === currentPid ? 'selected' : '';
+        const safeName = p.name ? p.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : `Player ${p.id}`;
+        return `<option value="${p.id}" ${isSelected}>${safeName}${loc}</option>`;
+      }).join('');
+    }
 
-      // 2. Add any newly added players from the modal
-      const currentCount = tournament.players.length;
-      for (let i = currentCount + 1; i <= editModalPlayerCount; i++) {
-        const input = document.getElementById(`edit-player-${i}`);
-        const newName = (input && input.value.trim()) ? input.value.trim() : `Player ${i}`;
-        
-        // Fair byes initialization (match minimum byes of active roster)
-        const byeList = tournament.players.map(p => p.byesReceived || 0);
-        const minByes = byeList.length > 0 ? Math.min(...byeList) : 0;
-
-        tournament.players.push({
-          id: i,
-          name: newName,
-          activeScore: 0,
-          totalScore: 0,
-          roundsPlayed: 0,
-          byesReceived: minByes,
-          avgScore: 0
+    function savePastScoresInputValuesFromDOM() {
+      tournament.roundsData.forEach((r, rIdx) => {
+        r.courts.forEach((c, cIdx) => {
+          const inputA = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreA`);
+          const inputB = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreB`);
+          if (inputA && inputA.value !== '') c.scoreA = parseInt(inputA.value, 10);
+          if (inputB && inputB.value !== '') c.scoreB = parseInt(inputB.value, 10);
         });
+      });
+    }
+
+    function changePastRoundPlayer(rIdx, courtIdx, team, slotIdx, newPidStr) {
+      const newPid = parseInt(newPidStr, 10);
+      if (isNaN(newPid)) return;
+
+      savePastScoresInputValuesFromDOM();
+      const r = tournament.roundsData[rIdx];
+      if (!r) return;
+      const court = r.courts[courtIdx];
+      if (!court) return;
+
+      const oldPid = (team === 'A') ? court.teamA[slotIdx] : court.teamB[slotIdx];
+      if (oldPid === newPid) return;
+
+      const oldPlayer = getPlayer(oldPid);
+      const newPlayer = getPlayer(newPid);
+
+      // Check if newPid was on the bye bench in this round
+      const byeIdx = (r.byes || []).indexOf(newPid);
+      if (byeIdx !== -1) {
+        r.byes[byeIdx] = oldPid;
+        if (team === 'A') court.teamA[slotIdx] = newPid;
+        else court.teamB[slotIdx] = newPid;
+      } else {
+        // Swap with wherever newPid is on a court in this round
+        let found = false;
+        for (let c = 0; c < r.courts.length; c++) {
+          const curC = r.courts[c];
+          for (let s = 0; s < curC.teamA.length; s++) {
+            if (curC.teamA[s] === newPid) {
+              curC.teamA[s] = oldPid;
+              if (team === 'A') court.teamA[slotIdx] = newPid;
+              else court.teamB[slotIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+          for (let s = 0; s < curC.teamB.length; s++) {
+            if (curC.teamB[s] === newPid) {
+              curC.teamB[s] = oldPid;
+              if (team === 'A') court.teamA[slotIdx] = newPid;
+              else court.teamB[slotIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
       }
 
-      tournament.playerCount = tournament.players.length;
+      // If tournament is completed and editing final round, sync active layout
+      if (tournament.isCompleted && rIdx === tournament.roundsData.length - 1) {
+        tournament.currentRoundLayout = JSON.parse(JSON.stringify(r));
+        renderActiveRound();
+      }
 
       recalculateAllScores();
       saveTournamentToStorage();
-      closeEditNamesModal();
-      renderActiveRound();
-      showToast("Player names & roster updated!");
+      openPastScoresModal(rIdx);
+      showToast(`🔁 Round ${rIdx + 1}: ${newPlayer ? newPlayer.name : 'Player'} and ${oldPlayer ? oldPlayer.name : 'Player'} swapped.`);
     }
 
-    function openPastScoresModal() {
+    function changePastRoundByePlayer(rIdx, byeIdx, newPidStr) {
+      const newPid = parseInt(newPidStr, 10);
+      if (isNaN(newPid)) return;
+
+      savePastScoresInputValuesFromDOM();
+      const r = tournament.roundsData[rIdx];
+      if (!r) return;
+
+      const oldPid = r.byes[byeIdx];
+      if (oldPid === newPid) return;
+
+      const oldPlayer = getPlayer(oldPid);
+      const newPlayer = getPlayer(newPid);
+
+      const otherByeIdx = (r.byes || []).indexOf(newPid);
+      if (otherByeIdx !== -1) {
+        r.byes[byeIdx] = newPid;
+        r.byes[otherByeIdx] = oldPid;
+      } else {
+        let found = false;
+        for (let c = 0; c < r.courts.length; c++) {
+          const curC = r.courts[c];
+          for (let s = 0; s < curC.teamA.length; s++) {
+            if (curC.teamA[s] === newPid) {
+              curC.teamA[s] = oldPid;
+              r.byes[byeIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+          for (let s = 0; s < curC.teamB.length; s++) {
+            if (curC.teamB[s] === newPid) {
+              curC.teamB[s] = oldPid;
+              r.byes[byeIdx] = newPid;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
+      }
+
+      if (tournament.isCompleted && rIdx === tournament.roundsData.length - 1) {
+        tournament.currentRoundLayout = JSON.parse(JSON.stringify(r));
+        renderActiveRound();
+      }
+
+      recalculateAllScores();
+      saveTournamentToStorage();
+      openPastScoresModal(rIdx);
+      showToast(`🔁 Round ${rIdx + 1}: ${newPlayer ? newPlayer.name : 'Player'} is resting on Bye Bench. ${oldPlayer ? oldPlayer.name : 'Player'} is playing.`);
+    }
+
+    function openPastScoresModal(openRoundIdx, pushHistory = true) {
       const container = document.getElementById('past-scores-container');
       const ptsLabel = tournament.byeScoringMode === 'player_avg' ? "Player's Avg PPG" : (tournament.byePoints > 0 ? `+${tournament.byePoints} pts` : `0 pts`);
 
       if (tournament.roundsData.length === 0) {
         container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 30px 0;">No completed rounds yet. Scores will appear here after finishing Round 1.</p>`;
       } else {
+        const targetOpen = openRoundIdx !== undefined ? openRoundIdx : tournament.roundsData.length - 1;
         let html = '';
         tournament.roundsData.forEach((r, rIdx) => {
+          const isOpen = rIdx === targetOpen;
           html += `
             <div class="round-accordion-item">
-              <div class="round-accordion-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <span onclick="togglePastRoundAccordion(${rIdx})" style="cursor: pointer; flex: 1;">🏆 Round ${rIdx + 1} Scores</span>
+              <div class="round-accordion-header" style="display: flex; justify-content: space-between; align-items: center;" onclick="togglePastRoundAccordion(${rIdx})">
+                <span style="flex: 1;">Round ${rIdx + 1} Scores</span>
                 <div style="display: flex; align-items: center; gap: 8px;" onclick="event.stopPropagation();">
                   <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 0.72rem; font-weight: 700; background: #fff;" 
                           onclick="exportScorecardPDF(${rIdx + 1})" title="Print or Export Scorecard PDF for Round ${rIdx + 1}">
-                    📋 Scorecard PDF
+                    Scorecard PDF
                   </button>
                   <span onclick="togglePastRoundAccordion(${rIdx})" style="cursor: pointer;">▼</span>
                 </div>
               </div>
-              <div class="round-accordion-body ${rIdx === tournament.roundsData.length - 1 ? 'open' : ''}" id="round-body-${rIdx}">
-                <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="round-accordion-body ${isOpen ? 'open' : ''}" id="round-body-${rIdx}">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
           `;
 
           r.courts.forEach((c, cIdx) => {
-            const pA1 = getPlayer(c.teamA[0]);
-            const pA2 = getPlayer(c.teamA[1]);
-            const pB1 = getPlayer(c.teamB[0]);
-            const pB2 = getPlayer(c.teamB[1]);
-
             html += `
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #f8fafc; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); flex-wrap: wrap;">
-                <div style="font-weight: 700; font-size: 0.85rem; min-width: 110px;">
-                  ${c.isKingCourt ? '👑 ' : ''}${c.courtName}
+              <div class="past-match-card">
+                <div style="font-weight: 800; font-size: 0.88rem; color: var(--text-main); display: flex; justify-content: space-between; align-items: center;">
+                  <span>${c.courtName}</span>
+                  <span class="court-badge badge-court" style="font-size: 0.7rem;">Court-${c.courtNum}</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="font-size: 0.82rem; font-weight: 600;">${pA1.name} & ${pA2.name}</span>
-                  <input type="number" min="0" max="99" style="width: 50px; height: 34px; text-align: center; font-weight: 800; border: 1.5px solid var(--border); border-radius: 6px;" 
-                         id="past-r${rIdx}-c${cIdx}-scoreA" value="${c.scoreA}">
-                </div>
-                <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8;">VS</span>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <input type="number" min="0" max="99" style="width: 50px; height: 34px; text-align: center; font-weight: 800; border: 1.5px solid var(--border); border-radius: 6px;" 
-                         id="past-r${rIdx}-c${cIdx}-scoreB" value="${c.scoreB}">
-                  <span style="font-size: 0.82rem; font-weight: 600;">${pB1.name} & ${pB2.name}</span>
+
+                <div class="past-match-grid">
+                  <!-- TEAM A -->
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Team A</div>
+                    <div class="player-select-wrapper" style="margin: 0; padding: 2px 6px;">
+                      <span class="player-slot-num">A1</span>
+                      <select class="player-match-select" onchange="changePastRoundPlayer(${rIdx}, ${cIdx}, 'A', 0, this.value)" title="Choose player for Team A Slot 1">
+                        ${renderPastRoundPlayerSelectOptions(r, c.teamA[0])}
+                      </select>
+                    </div>
+                    <div class="player-select-wrapper" style="margin: 0; padding: 2px 6px;">
+                      <span class="player-slot-num">A2</span>
+                      <select class="player-match-select" onchange="changePastRoundPlayer(${rIdx}, ${cIdx}, 'A', 1, this.value)" title="Choose player for Team A Slot 2">
+                        ${renderPastRoundPlayerSelectOptions(r, c.teamA[1])}
+                      </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                      <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">Score:</span>
+                      <input type="number" min="0" max="99" style="width: 55px; height: 32px; text-align: center; font-weight: 800; font-size: 0.95rem; border: 1.5px solid var(--border); border-radius: 6px;" 
+                             id="past-r${rIdx}-c${cIdx}-scoreA" value="${c.scoreA !== undefined ? c.scoreA : ''}" placeholder="0"
+                             onchange="savePastScoresInputValuesFromDOM()">
+                    </div>
+                  </div>
+
+                  <!-- VS Divider -->
+                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <span style="font-size: 0.8rem; font-weight: 900; color: #94a3b8; background: #e2e8f0; padding: 4px 8px; border-radius: 20px;">VS</span>
+                  </div>
+
+                  <!-- TEAM B -->
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Team B</div>
+                    <div class="player-select-wrapper" style="margin: 0; padding: 2px 6px;">
+                      <span class="player-slot-num">B1</span>
+                      <select class="player-match-select" onchange="changePastRoundPlayer(${rIdx}, ${cIdx}, 'B', 0, this.value)" title="Choose player for Team B Slot 1">
+                        ${renderPastRoundPlayerSelectOptions(r, c.teamB[0])}
+                      </select>
+                    </div>
+                    <div class="player-select-wrapper" style="margin: 0; padding: 2px 6px;">
+                      <span class="player-slot-num">B2</span>
+                      <select class="player-match-select" onchange="changePastRoundPlayer(${rIdx}, ${cIdx}, 'B', 1, this.value)" title="Choose player for Team B Slot 2">
+                        ${renderPastRoundPlayerSelectOptions(r, c.teamB[1])}
+                      </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                      <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">Score:</span>
+                      <input type="number" min="0" max="99" style="width: 55px; height: 32px; text-align: center; font-weight: 800; font-size: 0.95rem; border: 1.5px solid var(--border); border-radius: 6px;" 
+                             id="past-r${rIdx}-c${cIdx}-scoreB" value="${c.scoreB !== undefined ? c.scoreB : ''}" placeholder="0"
+                             onchange="savePastScoresInputValuesFromDOM()">
+                    </div>
+                  </div>
                 </div>
               </div>
             `;
           });
 
-          if (r.byes.length > 0) {
-            const byeNames = r.byes.map(pid => getPlayer(pid).name).join(', ');
+          if (r.byes && r.byes.length > 0) {
             html += `
-              <div style="font-size: 0.8rem; color: #713f12; background: #fefce8; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid #fde047;">
-                🪑 <strong>Byes (${ptsLabel}):</strong> ${byeNames}
+              <div style="font-size: 0.8rem; color: #713f12; background: #fefce8; padding: 10px 12px; border-radius: var(--radius-sm); border: 1.5px solid #fde047; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="font-weight: 800;">🪑 Byes (${ptsLabel}):</span>
+                ${r.byes.map((pid, bIdx) => `
+                  <div class="player-select-wrapper bye-select-wrapper" style="margin: 0; padding: 2px 8px;">
+                    <span class="bye-slot-badge" style="font-size: 0.72rem;">Rest #${bIdx + 1}</span>
+                    <select class="player-match-select" style="font-size: 0.82rem;" onchange="changePastRoundByePlayer(${rIdx}, ${bIdx}, this.value)" title="Choose resting player for this bye slot">
+                      ${renderPastRoundPlayerSelectOptions(r, pid)}
+                    </select>
+                  </div>
+                `).join('')}
               </div>
             `;
           }
@@ -2959,6 +3890,11 @@
       }
 
       document.getElementById('modal-past-scores').classList.add('active');
+      if (pushHistory && window.innerWidth <= 768) {
+        history.pushState({ modal: 'past-scores' }, '');
+      }
+      updateMobileChrome();
+      updateMobileNavActive('scores');
     }
 
     function togglePastRoundAccordion(rIdx) {
@@ -2967,36 +3903,26 @@
     }
 
     function closePastScoresModal() {
-      document.getElementById('modal-past-scores').classList.remove('active');
+      const el = document.getElementById('modal-past-scores');
+      if (el) el.classList.remove('active');
+      updateMobileChrome();
+      updateMobileNavActive('matches');
     }
 
     function savePastScoresModifications() {
-      tournament.roundsData.forEach((r, rIdx) => {
-        r.courts.forEach((c, cIdx) => {
-          const inputA = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreA`);
-          const inputB = document.getElementById(`past-r${rIdx}-c${cIdx}-scoreB`);
-          if (inputA && inputB) {
-            c.scoreA = parseInt(inputA.value, 10) || 0;
-            c.scoreB = parseInt(inputB.value, 10) || 0;
-          }
-        });
-      });
+      savePastScoresInputValuesFromDOM();
 
       // If tournament is completed, sync the active view inputs with edited final round scores
       if (tournament.isCompleted && tournament.roundsData.length >= tournament.totalRounds) {
         const lastRound = tournament.roundsData[tournament.roundsData.length - 1];
-        lastRound.courts.forEach((c, idx) => {
-          const inA = document.getElementById(`court-${idx}-scoreA`);
-          const inB = document.getElementById(`court-${idx}-scoreB`);
-          if (inA) inA.value = c.scoreA;
-          if (inB) inB.value = c.scoreB;
-        });
+        tournament.currentRoundLayout = JSON.parse(JSON.stringify(lastRound));
+        renderActiveRound();
       }
 
       recalculateAllScores();
       saveTournamentToStorage();
       closePastScoresModal();
-      showToast("Past scores saved & standings updated!");
+      showToast("Past scores & lineups saved and standings updated!");
     }
 
     function confirmResetTournament() {
@@ -3036,10 +3962,9 @@
 
       // 1. FINAL STANDINGS
       lines.push(`"=== FINAL STANDINGS ==="`);
-      lines.push(`"Rank","Player ID","Player Name","Total Points","Rounds Played","Byes Received","Avg Points/Round"`);
+      lines.push(`"Rank","Player ID","Player Name","Total Points Procured","Games Played","Byes Received","Avg Points/Game (PPG)"`);
       sorted.forEach((p, idx) => {
-        const totalRoundsCount = p.roundsPlayed + p.byesReceived;
-        const avg = totalRoundsCount > 0 ? (p.totalScore / totalRoundsCount).toFixed(1) : '0.0';
+        const avg = p.roundsPlayed > 0 ? (p.activeScore / p.roundsPlayed).toFixed(1) : '0.0';
         const cleanName = (p.name || '').replace(/"/g, '""');
         lines.push(`"${idx + 1}","${p.id}","${cleanName}","${p.totalScore}","${p.roundsPlayed}","${p.byesReceived}","${avg}"`);
       });
@@ -3075,7 +4000,7 @@
           if (!found && r.byes.includes(p.id)) {
             roundScore = tournament.byeScoringMode === 'fixed' 
               ? (tournament.byePoints !== undefined ? tournament.byePoints : 7)
-              : p.avgScore;
+              : 'Bye';
             found = true;
           }
 
@@ -3481,8 +4406,6 @@
       if (pdfBtn) pdfBtn.style.display = 'inline-flex';
       const csvBtn = document.getElementById('btn-export-csv');
       if (csvBtn) csvBtn.style.display = 'inline-flex';
-      const editBtn = document.getElementById('btn-edit-names');
-      if (editBtn) editBtn.style.display = 'inline-flex';
       const pastBtn = document.getElementById('btn-past-scores');
       if (pastBtn) pastBtn.style.display = 'inline-flex';
       const resetBtn = document.getElementById('btn-reset-game');
@@ -3844,6 +4767,7 @@
 
     /* --- EXPORT ALL ROUNDS INFORMATION & SCORECARDS TOGETHER IN A SINGLE PDF --- */
     function exportTournamentPDF() {
+      saveCurrentActiveScoresFromDOM();
       recalculateAllScores();
 
       const totalRounds = tournament.totalRounds || parseInt(document.getElementById('total-rounds')?.value, 10) || 7;
@@ -3962,7 +4886,7 @@
         html += `<th style="text-align: center; min-width: 55px;">R${r}</th>`;
       }
       html += `
-              <th style="text-align: right; width: 80px;">Total</th>
+              <th style="text-align: right; width: 85px;">Avg Score</th>
             </tr>
           </thead>
           <tbody>
@@ -3993,14 +4917,14 @@
             });
 
             if (!found && (rData.byes || []).includes(p.id)) {
-              roundScore = tournament.byeScoringMode === 'fixed' 
-                ? (tournament.byePoints !== undefined ? tournament.byePoints : 7)
-                : p.avgScore;
+              const isFixed = tournament.byeScoringMode === 'fixed';
+              const byeVal = isFixed ? (tournament.byePoints !== undefined ? tournament.byePoints : 7) : 'Bye';
+              roundScore = byeVal;
               isBye = true;
               found = true;
             }
 
-            html += `<td style="text-align: center; font-weight: 700; ${isBye ? 'color: #b45309; background: #fefce8;' : ''}">${roundScore}${isBye ? ' (B)' : ''}</td>`;
+            html += `<td style="text-align: center; font-weight: 700; ${isBye ? 'color: #b45309; background: #fefce8;' : ''}">${roundScore}</td>`;
           } else if (r === tournament.currentRound && !tournament.isCompleted && tournament.currentRoundLayout) {
             const curLayout = tournament.currentRoundLayout;
             let liveScore = '';
@@ -4032,8 +4956,9 @@
           }
         }
 
+        const avgScoreDisplay = p.roundsPlayed > 0 ? (p.activeScore / p.roundsPlayed).toFixed(1) : '0.0';
         html += `
-            <td style="text-align: right; font-weight: 800; color: #0284c7;">&nbsp;</td>
+            <td style="text-align: right; font-weight: 800; color: #0284c7;">${avgScoreDisplay}</td>
           </tr>
         `;
       });
@@ -4104,10 +5029,6 @@
                     <div class="team-title">Team A</div>
                     <div class="player-line">${pA1}</div>
                     <div class="player-line">${pA2}</div>
-                    <div class="server-checkboxes">
-                      <span>[ ] Server 1</span>
-                      <span>[ ] Server 2</span>
-                    </div>
                   </td>
                   <td class="score-col">
                     <div class="team-title">Final Score</div>
@@ -4121,10 +5042,6 @@
                     <div class="team-title">Team B</div>
                     <div class="player-line">${pB1}</div>
                     <div class="player-line">${pB2}</div>
-                    <div class="server-checkboxes">
-                      <span>[ ] Server 1</span>
-                      <span>[ ] Server 2</span>
-                    </div>
                   </td>
                   <td class="score-col">
                     <div class="team-title">Final Score</div>
@@ -4135,7 +5052,6 @@
 
               <div class="scorecard-footer">
                 <div>🪑 <strong>Round ${rNum} Bench (Byes):</strong> ${byeNames}</div>
-                <div>Court Referee / Player Sign-off: _______________________</div>
               </div>
             </div>
           `;
@@ -4203,8 +5119,11 @@
     function updateTimerDisplay() {
       const mins = Math.floor(tournament.timerSeconds / 60);
       const secs = tournament.timerSeconds % 60;
-      document.getElementById('timer-display').innerText = 
-        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const disp = document.getElementById('timer-display');
+      if (disp) disp.innerText = formatted;
+      const mVal = document.getElementById('mobile-menu-timer-val');
+      if (mVal) mVal.innerText = formatted;
     }
 
     function playBuzzerSound() {
@@ -4244,6 +5163,310 @@
         setTimeout(() => toast.remove(), 300);
       }, 3000);
     }
+
+    /* ==========================================================================
+       MOBILE APP NAVIGATION & GESTURE CONTROLLERS
+       ========================================================================== */
+
+    function handleMobileBack() {
+      // 1. If any modal is active, close it
+      const activeModal = document.querySelector('.modal-overlay.active');
+      if (activeModal) {
+        if (activeModal.id === 'modal-mobile-more') closeMobileMoreSheet();
+        else if (activeModal.id === 'modal-leaderboard') closeLeaderboardModal();
+        else if (activeModal.id === 'modal-past-scores') closePastScoresModal();
+        return;
+      }
+
+      // 2. If rotation preview card is open, scroll back to top of round
+      const rotCard = document.getElementById('rotation-preview-card');
+      if (rotCard && rotCard.style.display !== 'none') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // 3. If in scoring view, prompt to return to setup
+      const scoringView = document.getElementById('scoring-view');
+      if (scoringView && scoringView.style.display !== 'none') {
+        confirmResetTournament();
+        return;
+      }
+    }
+
+    function openMobileMoreSheet(pushHistory = true) {
+      const sheet = document.getElementById('modal-mobile-more');
+      if (sheet) sheet.classList.add('active');
+      if (pushHistory && window.innerWidth <= 768) {
+        history.pushState({ modal: 'more' }, '');
+      }
+      updateMobileChrome();
+      updateMobileNavActive('more');
+    }
+
+    function closeMobileMoreSheet() {
+      const sheet = document.getElementById('modal-mobile-more');
+      if (sheet) sheet.classList.remove('active');
+      updateMobileChrome();
+      updateMobileNavActive('matches');
+    }
+
+    function switchMobileTab(tab) {
+      updateMobileNavActive(tab);
+      if (tab === 'matches') {
+        closeLeaderboardModal();
+        closePastScoresModal();
+        closeMobileMoreSheet();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tab === 'standings') {
+        closePastScoresModal();
+        closeMobileMoreSheet();
+        openLeaderboardModal();
+      } else if (tab === 'scores') {
+        closeLeaderboardModal();
+        closeMobileMoreSheet();
+        openPastScoresModal();
+      } else if (tab === 'more') {
+        openMobileMoreSheet();
+      }
+    }
+
+    function updateMobileNavActive(tab) {
+      document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`tab-nav-${tab}`);
+      if (target) target.classList.add('active');
+    }
+
+    function updateMobileChrome() {
+      const scoringView = document.getElementById('scoring-view');
+      const isScoring = scoringView && scoringView.style.display !== 'none';
+      const isModalActive = document.querySelector('.modal-overlay.active');
+      const backBtn = document.getElementById('btn-mobile-back');
+      const backText = document.getElementById('mobile-back-text');
+      const barTitle = document.getElementById('mobile-bar-title');
+      const barSub = document.getElementById('mobile-bar-subtitle');
+      const rBadge = document.getElementById('mobile-round-badge');
+      const resetTile = document.getElementById('mobile-menu-reset-tile');
+
+      if (!barTitle) return;
+
+      if (isModalActive) {
+        if (backBtn) {
+          backBtn.style.visibility = 'visible';
+          if (backText) backText.innerText = 'Back';
+        }
+        if (isModalActive.id === 'modal-leaderboard') {
+          barTitle.innerText = '🏆 Standings';
+          barSub.innerText = 'Tournament Leaderboard';
+        } else if (isModalActive.id === 'modal-past-scores') {
+          barTitle.innerText = '📋 Past Scores';
+          barSub.innerText = 'Rounds & Match History';
+        } else if (isModalActive.id === 'modal-mobile-more') {
+          barTitle.innerText = '⚙️ More Options';
+          barSub.innerText = 'Tournament Actions';
+        }
+      } else if (isScoring) {
+        if (backBtn) {
+          backBtn.style.visibility = 'visible';
+          if (backText) backText.innerText = 'Setup';
+        }
+        barTitle.innerText = `Round ${tournament.currentRound} of ${tournament.totalRounds}`;
+        barSub.innerText = `${tournament.courtCount} Courts Active`;
+        if (rBadge) {
+          rBadge.style.display = 'inline-block';
+          rBadge.innerText = `R${tournament.currentRound}`;
+        }
+        if (resetTile) resetTile.style.display = 'flex';
+      } else {
+        if (backBtn) {
+          backBtn.style.visibility = 'hidden';
+        }
+        barTitle.innerText = 'King of the Court';
+        barSub.innerText = 'Tournament Setup';
+        if (rBadge) rBadge.style.display = 'none';
+        if (resetTile) resetTile.style.display = 'none';
+      }
+
+      // Update timer in mobile menu
+      const timerVal = document.getElementById('timer-display')?.innerText || '12:00';
+      const mTimerVal = document.getElementById('mobile-menu-timer-val');
+      if (mTimerVal) mTimerVal.innerText = timerVal;
+      const isRunning = tournament && tournament.timerRunning;
+      const action = document.getElementById('mobile-menu-timer-action');
+      const status = document.getElementById('mobile-menu-timer-status');
+      if (action) action.innerText = isRunning ? '⏸' : '▶';
+      if (status) status.innerText = isRunning ? 'Timer running... tap to pause' : 'Tap to start/pause countdown';
+    }
+
+    function toggleTimerFromMobileMenu() {
+      toggleTimer();
+      updateMobileChrome();
+    }
+
+    function renderMobileCourtPager() {
+      const pager = document.getElementById('mobile-court-pager');
+      if (!pager || !tournament.currentRoundLayout) return;
+      const courts = tournament.currentRoundLayout.courts;
+      if (!courts || courts.length === 0) {
+        pager.style.display = 'none';
+        return;
+      }
+      pager.style.display = 'flex';
+      pager.innerHTML = courts.map((c, idx) => `
+        <button type="button" class="court-pager-pill ${idx === 0 ? 'active' : ''}" 
+                id="court-pill-${idx}" onclick="scrollToCourt(${idx})">
+          Court-${c.courtNum}
+        </button>
+      `).join('');
+    }
+
+    function scrollToCourt(courtIdx) {
+      const container = document.getElementById('courts-container');
+      if (!container) return;
+      const cards = container.querySelectorAll('.court-card');
+      if (cards[courtIdx]) {
+        cards[courtIdx].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      }
+      document.querySelectorAll('.court-pager-pill').forEach((pill, idx) => {
+        pill.classList.toggle('active', idx === courtIdx);
+      });
+    }
+
+    function initCourtSwipeListener() {
+      const container = document.getElementById('courts-container');
+      if (!container) return;
+      let scrollTimeout;
+      container.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const cards = container.querySelectorAll('.court-card');
+          const containerLeft = container.getBoundingClientRect().left;
+          let closestIdx = 0;
+          let minDiff = Infinity;
+          cards.forEach((card, idx) => {
+            const diff = Math.abs(card.getBoundingClientRect().left - containerLeft);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closestIdx = idx;
+            }
+          });
+          document.querySelectorAll('.court-pager-pill').forEach((pill, idx) => {
+            pill.classList.toggle('active', idx === closestIdx);
+          });
+        }, 80);
+      }, { passive: true });
+    }
+
+    function initBottomSheetDrag() {
+      const dialogs = document.querySelectorAll('.modal-dialog');
+      dialogs.forEach(sheet => {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
+        const handle = sheet.querySelector('.sheet-drag-handle') || sheet.querySelector('.modal-header');
+        if (!handle) return;
+
+        handle.addEventListener('touchstart', (e) => {
+          if (window.innerWidth > 768) return;
+          startY = e.touches[0].clientY;
+          isDragging = true;
+          sheet.style.transition = 'none';
+        }, { passive: true });
+
+        handle.addEventListener('touchmove', (e) => {
+          if (!isDragging || window.innerWidth > 768) return;
+          currentY = e.touches[0].clientY;
+          const diff = currentY - startY;
+          if (diff > 0) {
+            sheet.style.transform = `translateY(${diff}px)`;
+          }
+        }, { passive: true });
+
+        handle.addEventListener('touchend', (e) => {
+          if (!isDragging || window.innerWidth > 768) return;
+          isDragging = false;
+          sheet.style.transition = 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)';
+          const diff = currentY - startY;
+          if (diff > 75) {
+            const overlay = sheet.closest('.modal-overlay');
+            if (overlay) {
+              if (overlay.id === 'modal-leaderboard') closeLeaderboardModal();
+              else if (overlay.id === 'modal-past-scores') closePastScoresModal();
+              else if (overlay.id === 'modal-mobile-more') closeMobileMoreSheet();
+            }
+          } else {
+            sheet.style.transform = 'translateY(0)';
+          }
+        });
+      });
+    }
+
+    function initViewSwipeGestures() {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      window.addEventListener('touchstart', (e) => {
+        if (window.innerWidth > 768) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (window.innerWidth > 768) return;
+        const target = e.target;
+        if (target && (target.closest('.courts-grid') || target.closest('.score-input') || target.closest('.player-match-select'))) {
+          return;
+        }
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipeGesture();
+      }, { passive: true });
+
+      function handleSwipeGesture() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        if (Math.abs(deltaX) > 70 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+          const isLeaderboard = document.getElementById('modal-leaderboard')?.classList.contains('active');
+          const isPastScores = document.getElementById('modal-past-scores')?.classList.contains('active');
+          const isMore = document.getElementById('modal-mobile-more')?.classList.contains('active');
+
+          if (deltaX > 0) {
+            // Swiped right (-->)
+            if (isLeaderboard) {
+              closeLeaderboardModal();
+            } else if (isPastScores) {
+              closePastScoresModal();
+              openLeaderboardModal();
+            } else if (isMore) {
+              closeMobileMoreSheet();
+              openPastScoresModal();
+            }
+          } else {
+            // Swiped left (<--)
+            if (!isLeaderboard && !isPastScores && !isMore) {
+              openLeaderboardModal();
+            } else if (isLeaderboard) {
+              closeLeaderboardModal();
+              openPastScoresModal();
+            } else if (isPastScores) {
+              closePastScoresModal();
+              openMobileMoreSheet();
+            }
+          }
+        }
+      }
+    }
+
+    window.addEventListener('popstate', () => {
+      const activeModal = document.querySelector('.modal-overlay.active');
+      if (activeModal) {
+        if (activeModal.id === 'modal-mobile-more') closeMobileMoreSheet();
+        else if (activeModal.id === 'modal-leaderboard') closeLeaderboardModal();
+        else if (activeModal.id === 'modal-past-scores') closePastScoresModal();
+      }
+    });
   </script>
 </body>
 </html>
