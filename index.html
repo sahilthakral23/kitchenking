@@ -1060,17 +1060,81 @@
       background: linear-gradient(180deg, #ffedd5 0%, #ffffff 100%);
     }
 
+    .podium-card.skipped {
+      border-style: dashed;
+      border-color: #cbd5e1;
+      background: #f8fafc;
+      opacity: 0.85;
+    }
+
     .podium-crown {
       font-size: 1.5rem;
       line-height: 1;
     }
 
+    .podium-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .podium-rank-badge.gold {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .podium-rank-badge.silver {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .podium-rank-badge.bronze {
+      background: #ffedd5;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
+
+    .podium-names-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 2px 0;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
     .podium-name {
       font-weight: 800;
       font-size: 0.95rem;
+      line-height: 1.25;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .podium-tied-names {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px 0;
+    }
+
+    .podium-tied-names .podium-name {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.88rem;
     }
 
     .podium-score {
@@ -1078,6 +1142,14 @@
       font-size: 1.25rem;
       font-weight: 900;
       color: var(--primary-dark);
+      line-height: 1.15;
+    }
+
+    .podium-meta {
+      font-size: 0.73rem;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.2;
     }
 
     .table-responsive {
@@ -1957,8 +2029,10 @@
               <tr>
                 <th style="width: 50px;">Rank</th>
                 <th>Player</th>
-                <th style="text-align: center;">Games</th>
-                <th style="text-align: center;">Byes</th>
+                <th style="text-align: center; width: 55px;" title="Games Won">Won</th>
+                <th style="text-align: center; width: 55px;" title="Games Lost">Lost</th>
+                <th style="text-align: center; width: 60px;">Games</th>
+                <th style="text-align: center; width: 55px;">Byes</th>
                 <th style="text-align: center;" title="Actual points procured divided by games played">Avg (PPG)</th>
                 <th style="text-align: right;" title="Actual total points scored across matches">Total Points</th>
               </tr>
@@ -3461,19 +3535,36 @@
         p.roundsPlayed = 0;
         p.byesReceived = 0;
         p.avgScore = 0;
+        p.gamesWon = 0;
+        p.gamesLost = 0;
+        p.gamesTied = 0;
+        p.matchesWon = 0;
+        p.matchesLost = 0;
       });
 
-      // 2. Tally active playing scores and bye occurrences
+      // 2. Tally active playing scores, win/loss records, and bye occurrences
       tournament.roundsData.forEach(r => {
         r.courts.forEach(c => {
           const scoreA = parseInt(c.scoreA, 10) || 0;
           const scoreB = parseInt(c.scoreB, 10) || 0;
+
+          const isWinA = scoreA > scoreB;
+          const isWinB = scoreB > scoreA;
 
           c.teamA.forEach(pid => {
             const p = getPlayer(pid);
             if (p) {
               p.activeScore += scoreA;
               p.roundsPlayed += 1;
+              if (isWinA) {
+                p.gamesWon += 1;
+                p.matchesWon += 1;
+              } else if (isWinB) {
+                p.gamesLost += 1;
+                p.matchesLost += 1;
+              } else {
+                p.gamesTied += 1;
+              }
             }
           });
 
@@ -3482,6 +3573,15 @@
             if (p) {
               p.activeScore += scoreB;
               p.roundsPlayed += 1;
+              if (isWinB) {
+                p.gamesWon += 1;
+                p.matchesWon += 1;
+              } else if (isWinA) {
+                p.gamesLost += 1;
+                p.matchesLost += 1;
+              } else {
+                p.gamesTied += 1;
+              }
             }
           });
         });
@@ -3548,41 +3648,149 @@
     }
 
     function renderLeaderboardContent() {
-      // Sort players: in PPG mode, rank by points procured averaged by games played
+      // Sort players: PPG mode: avg PPG → most wins → fewest losses → total score → id
       const sorted = [...tournament.players].sort((a, b) => {
         if (leaderboardSortMode === 'ppg') {
-          if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+          const avgA = parseFloat(a.avgScore.toFixed(1));
+          const avgB = parseFloat(b.avgScore.toFixed(1));
+          if (avgB !== avgA) return avgB - avgA;
+          // Tiebreaker 1: more games won
+          if ((b.gamesWon || 0) !== (a.gamesWon || 0)) return (b.gamesWon || 0) - (a.gamesWon || 0);
+          // Tiebreaker 2: fewer games lost
+          if ((a.gamesLost || 0) !== (b.gamesLost || 0)) return (a.gamesLost || 0) - (b.gamesLost || 0);
           if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
         } else {
           if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-          if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+          const avgA = parseFloat(a.avgScore.toFixed(1));
+          const avgB = parseFloat(b.avgScore.toFixed(1));
+          if (avgB !== avgA) return avgB - avgA;
+          // Tiebreaker: wins/losses
+          if ((b.gamesWon || 0) !== (a.gamesWon || 0)) return (b.gamesWon || 0) - (a.gamesWon || 0);
+          if ((a.gamesLost || 0) !== (b.gamesLost || 0)) return (a.gamesLost || 0) - (b.gamesLost || 0);
         }
         return a.id - b.id;
       });
 
+      // Calculate standard competition ranks for all players
+      // Two players share a rank only if avg AND wins AND losses are all identical
+      let currentLbRank = 1;
+      let prevLbScore = null;
+      sorted.forEach((p, idx) => {
+        const scoreKey = leaderboardSortMode === 'ppg'
+          ? `${p.avgScore.toFixed(1)}_${p.gamesWon || 0}_${p.gamesLost || 0}`
+          : `${p.totalScore}_${p.gamesWon || 0}_${p.gamesLost || 0}`;
+        if (tournament.roundsData.length === 0) {
+          p.rank = idx + 1;
+        } else {
+          if (idx > 0 && scoreKey === prevLbScore) {
+            p.rank = currentLbRank;
+          } else {
+            currentLbRank = idx + 1;
+            p.rank = currentLbRank;
+            prevLbScore = scoreKey;
+          }
+        }
+      });
+
+      // Extract players tied in positions 1, 2, or 3
+      const rank1Players = sorted.filter(p => p.rank === 1);
+      const rank2Players = sorted.filter(p => p.rank === 2);
+      const rank3Players = sorted.filter(p => p.rank === 3);
+
       // Podium Top 3
       const podium = document.getElementById('podium-container');
-      if (sorted.length >= 3) {
+      if (sorted.length > 0) {
         const getScoreLabel = (p) => leaderboardSortMode === 'ppg' ? `${p.avgScore.toFixed(1)} PPG` : `${p.totalScore} pts`;
+
+        const renderPodiumCard = (placeType, rankNum, crownEmoji, badgeClass, playersList, skippedReason) => {
+          if (!playersList || playersList.length === 0) {
+            return `
+              <div class="podium-card ${placeType} skipped">
+                <div class="podium-crown" style="opacity: 0.45;">${crownEmoji}</div>
+                <span class="podium-rank-badge ${badgeClass}">${rankNum === 1 ? '1st' : rankNum === 2 ? '2nd' : '3rd'} Place</span>
+                <div style="font-size: 0.95rem; color: #94a3b8; font-weight: 700; margin: 8px 0;">—</div>
+                <div style="font-size: 0.74rem; color: #64748b; font-weight: 600; line-height: 1.3;">
+                  ${skippedReason}
+                </div>
+              </div>
+            `;
+          }
+
+          const isTie = playersList.length > 1;
+          const mainScore = getScoreLabel(playersList[0]);
+          const badgeLabel = `${rankNum === 1 ? '1st' : rankNum === 2 ? '2nd' : '3rd'} Place${isTie ? ' (Tie)' : ''}`;
+
+          let namesHtml = '';
+          if (playersList.length === 1) {
+            namesHtml = `<div class="podium-name" title="${playersList[0].name}">${playersList[0].name}</div>`;
+          } else {
+            namesHtml = `
+              <div class="podium-tied-names">
+                ${playersList.map(p => `<div class="podium-name" title="${p.name}">${p.name}</div>`).join('')}
+              </div>
+            `;
+          }
+
+          let metaHtml = '';
+          if (!isTie) {
+            metaHtml = `<span style="color: #059669; font-weight: 700;">${playersList[0].gamesWon || 0}W</span> - <span style="color: #dc2626; font-weight: 700;">${playersList[0].gamesLost || 0}L</span> • ${playersList[0].totalScore} pts | ${playersList[0].roundsPlayed} ${playersList[0].roundsPlayed === 1 ? 'game' : 'games'}`;
+          } else {
+            const allSamePts = playersList.every(p => p.totalScore === playersList[0].totalScore);
+            const allSameGames = playersList.every(p => p.roundsPlayed === playersList[0].roundsPlayed);
+            const allSameWon = playersList.every(p => (p.gamesWon || 0) === (playersList[0].gamesWon || 0));
+            const allSameLost = playersList.every(p => (p.gamesLost || 0) === (playersList[0].gamesLost || 0));
+            if (allSameWon && allSameLost && allSamePts && allSameGames) {
+              metaHtml = `${playersList.length} Players Tied • <span style="color: #059669; font-weight: 700;">${playersList[0].gamesWon || 0}W</span> - <span style="color: #dc2626; font-weight: 700;">${playersList[0].gamesLost || 0}L</span> • ${playersList[0].totalScore} pts | ${playersList[0].roundsPlayed}g`;
+            } else {
+              metaHtml = `${playersList.length} Players Tied • ${playersList[0].gamesWon || 0}W - ${playersList[0].gamesLost || 0}L`;
+            }
+          }
+
+          return `
+            <div class="podium-card ${placeType}">
+              <div class="podium-crown">${crownEmoji}</div>
+              <span class="podium-rank-badge ${badgeClass}">${badgeLabel}</span>
+              <div class="podium-names-container">
+                ${namesHtml}
+              </div>
+              <div class="podium-score">${mainScore}</div>
+              <div class="podium-meta">${metaHtml}</div>
+            </div>
+          `;
+        };
+
+        const higherTieFor2 = '1st';
+        const higherTieFor3 = rank2Players.length > 0 ? '2nd' : '1st';
+
+        const cardSecond = renderPodiumCard(
+          'second',
+          2,
+          '🥈',
+          'silver',
+          rank2Players,
+          `No 2nd Place<br><span style="font-size: 0.70rem; color: #94a3b8;">(Tied for ${higherTieFor2} Place)</span>`
+        );
+        const cardFirst = renderPodiumCard(
+          'first',
+          1,
+          '👑',
+          'gold',
+          rank1Players,
+          'No 1st Place'
+        );
+        const cardThird = renderPodiumCard(
+          'third',
+          3,
+          '🥉',
+          'bronze',
+          rank3Players,
+          `No 3rd Place<br><span style="font-size: 0.70rem; color: #94a3b8;">(Tied for ${higherTieFor3} Place)</span>`
+        );
+
         podium.innerHTML = `
-          <div class="podium-card second">
-            <div class="podium-crown">🥈</div>
-            <div class="podium-name">${sorted[1].name}</div>
-            <div class="podium-score">${getScoreLabel(sorted[1])}</div>
-            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[1].totalScore} pts | ${sorted[1].roundsPlayed} games</div>
-          </div>
-          <div class="podium-card first">
-            <div class="podium-crown">👑</div>
-            <div class="podium-name">${sorted[0].name}</div>
-            <div class="podium-score">${getScoreLabel(sorted[0])}</div>
-            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[0].totalScore} pts | ${sorted[0].roundsPlayed} games</div>
-          </div>
-          <div class="podium-card third">
-            <div class="podium-crown">🥉</div>
-            <div class="podium-name">${sorted[2].name}</div>
-            <div class="podium-score">${getScoreLabel(sorted[2])}</div>
-            <div style="font-size: 0.75rem; color: #64748b; margin-top: 3px;">${sorted[2].totalScore} pts | ${sorted[2].roundsPlayed} games</div>
-          </div>
+          ${cardSecond}
+          ${cardFirst}
+          ${cardThird}
         `;
         podium.style.display = 'grid';
       } else {
@@ -3592,28 +3800,16 @@
       // Full Table
       const tbody = document.getElementById('leaderboard-table-body');
       let html = '';
-      let currentLbRank = 1;
-      let prevLbScore = null;
 
-      sorted.forEach((p, idx) => {
-        const scoreKey = leaderboardSortMode === 'ppg' ? p.avgScore.toFixed(1) : p.totalScore;
-        let rank;
-        if (tournament.roundsData.length === 0) {
-          rank = idx + 1;
-        } else {
-          if (idx > 0 && scoreKey === prevLbScore) {
-            rank = currentLbRank;
-          } else {
-            currentLbRank = idx + 1;
-            rank = currentLbRank;
-            prevLbScore = scoreKey;
-          }
-        }
+      sorted.forEach((p) => {
+        const rank = p.rank;
         const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
         html += `
           <tr>
             <td><span class="rank-pill ${rankClass}">${rank}</span></td>
             <td><strong>${p.name}</strong></td>
+            <td style="text-align: center; font-weight: 700; color: #059669;">${p.gamesWon || 0}</td>
+            <td style="text-align: center; font-weight: 700; color: #dc2626;">${p.gamesLost || 0}</td>
             <td style="text-align: center;">${p.roundsPlayed}</td>
             <td style="text-align: center;">${p.byesReceived}</td>
             <td style="text-align: center; font-weight: 800; color: #047857; font-size: 1.05rem;">${p.avgScore.toFixed(1)}</td>
@@ -3961,8 +4157,13 @@
 
       recalculateAllScores();
 
-      // Sort players by total score descending
+      // Sort players by avg PPG → wins → losses → total score (consistent with leaderboard)
       const sorted = [...tournament.players].sort((a, b) => {
+        const avgA = a.roundsPlayed > 0 ? parseFloat((a.activeScore / a.roundsPlayed).toFixed(1)) : 0;
+        const avgB = b.roundsPlayed > 0 ? parseFloat((b.activeScore / b.roundsPlayed).toFixed(1)) : 0;
+        if (avgB !== avgA) return avgB - avgA;
+        if ((b.gamesWon || 0) !== (a.gamesWon || 0)) return (b.gamesWon || 0) - (a.gamesWon || 0);
+        if ((a.gamesLost || 0) !== (b.gamesLost || 0)) return (a.gamesLost || 0) - (b.gamesLost || 0);
         if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
         return a.id - b.id;
       });
@@ -3977,25 +4178,26 @@
 
       // 1. FINAL STANDINGS
       lines.push(`"=== FINAL STANDINGS ==="`);
-      lines.push(`"Rank","Player ID","Player Name","Total Points Procured","Games Played","Byes Received","Avg Points/Game (PPG)"`);
+      lines.push(`"Rank","Player ID","Player Name","Games Won","Games Lost","Total Points Procured","Games Played","Byes Received","Avg Points/Game (PPG)"`);
       let currentCsvRank = 1;
       let prevCsvScore = null;
       sorted.forEach((p, idx) => {
         const avg = p.roundsPlayed > 0 ? (p.activeScore / p.roundsPlayed).toFixed(1) : '0.0';
+        const csvScoreKey = `${avg}_${p.gamesWon || 0}_${p.gamesLost || 0}`;
         let rank;
         if (tournament.roundsData.length === 0) {
           rank = idx + 1;
         } else {
-          if (idx > 0 && avg === prevCsvScore) {
+          if (idx > 0 && csvScoreKey === prevCsvScore) {
             rank = currentCsvRank;
           } else {
             currentCsvRank = idx + 1;
             rank = currentCsvRank;
-            prevCsvScore = avg;
+            prevCsvScore = csvScoreKey;
           }
         }
         const cleanName = (p.name || '').replace(/"/g, '""');
-        lines.push(`"${rank}","${p.id}","${cleanName}","${p.totalScore}","${p.roundsPlayed}","${p.byesReceived}","${avg}"`);
+        lines.push(`"${rank}","${p.id}","${cleanName}","${p.gamesWon || 0}","${p.gamesLost || 0}","${p.totalScore}","${p.roundsPlayed}","${p.byesReceived}","${avg}"`);
       });
       lines.push(``);
 
@@ -4816,7 +5018,10 @@
             totalScore: 0,
             roundsPlayed: 0,
             byesReceived: 0,
-            avgScore: 0
+            avgScore: 0,
+            gamesWon: 0,
+            gamesLost: 0,
+            gamesTied: 0
           });
         }
       }
@@ -4829,9 +5034,11 @@
       const getAvg = (p) => p.roundsPlayed > 0 ? (p.activeScore / p.roundsPlayed) : (p.avgScore || 0);
 
       const sorted = [...playersList].sort((a, b) => {
-        const avgA = getAvg(a);
-        const avgB = getAvg(b);
+        const avgA = parseFloat(getAvg(a).toFixed(1));
+        const avgB = parseFloat(getAvg(b).toFixed(1));
         if (avgB !== avgA) return avgB - avgA;
+        if ((b.gamesWon || 0) !== (a.gamesWon || 0)) return (b.gamesWon || 0) - (a.gamesWon || 0);
+        if ((a.gamesLost || 0) !== (b.gamesLost || 0)) return (a.gamesLost || 0) - (b.gamesLost || 0);
         if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
         return a.id - b.id;
       });
@@ -4920,6 +5127,8 @@
         html += `<th style="text-align: center; min-width: 55px;">R${r}</th>`;
       }
       html += `
+              <th style="text-align: center; width: 45px;">Won</th>
+              <th style="text-align: center; width: 45px;">Lost</th>
               <th style="text-align: right; width: 85px;">Avg Score</th>
             </tr>
           </thead>
@@ -4931,16 +5140,17 @@
 
       sorted.forEach((p, idx) => {
         const avgScoreDisplay = p.roundsPlayed > 0 ? (p.activeScore / p.roundsPlayed).toFixed(1) : '0.0';
+        const pdfScoreKey = `${avgScoreDisplay}_${p.gamesWon || 0}_${p.gamesLost || 0}`;
         let rankNum;
         if (tournament.roundsData.length === 0) {
           rankNum = idx + 1;
         } else {
-          if (idx > 0 && avgScoreDisplay === prevPdfScore) {
+          if (idx > 0 && pdfScoreKey === prevPdfScore) {
             rankNum = currentPdfRank;
           } else {
             currentPdfRank = idx + 1;
             rankNum = currentPdfRank;
-            prevPdfScore = avgScoreDisplay;
+            prevPdfScore = pdfScoreKey;
           }
         }
 
@@ -5008,6 +5218,8 @@
         }
 
         html += `
+            <td style="text-align: center; font-weight: 700; color: #047857;">${p.gamesWon || 0}</td>
+            <td style="text-align: center; font-weight: 700; color: #b91c1c;">${p.gamesLost || 0}</td>
             <td style="text-align: right; font-weight: 800; color: #0284c7;">${avgScoreDisplay}</td>
           </tr>
         `;
